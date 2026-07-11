@@ -620,11 +620,11 @@ function Dashboard() {
   return (
     <div>
       <h3>Dashboard</h3>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginBottom: '24px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '32px' }}>
         {Object.entries(data.metrics).map(([k, v]) => (
-          <div key={k} style={{ padding: '14px', background: '#f5f5ff', borderRadius: '10px', textAlign: 'center' }}>
-            <div style={{ fontSize: '24px', fontWeight: 700, color: '#646cff' }}>{String(v)}</div>
-            <div style={{ color: '#666', fontSize: '13px', textTransform: 'capitalize' }}>{k}</div>
+          <div key={k} style={{ padding: '20px', background: '#eef2ff', border: '1px solid #d0d7ff', borderRadius: '12px', textAlign: 'center', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
+            <div style={{ fontSize: '28px', fontWeight: 800, color: '#4f46e5' }}>{String(v)}</div>
+            <div style={{ color: '#4b5563', fontSize: '14px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{k}</div>
           </div>
         ))}
       </div>
