@@ -1,0 +1,59 @@
+name: Visual Regression Testing
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  visual-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Full history required for selective testing
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Cache Playwright Browsers
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Install Playwright Browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx playwright install chromium --with-deps
+
+      - name: Cache Percy Browser
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/share/percy
+          key: ${{ runner.os }}-percy-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Build frontend application
+        run: npm run build --if-present
+
+      - name: Start dev server in background
+        run: npx vite --port 3000 --strictPort &
+
+      - name: Wait for local server
+        run: |
+          for i in {1..30}; do
+            curl -s http://localhost:3000 && break || sleep 1
+          done
+
+      - name: Run visual regression tests
+        run: npx uvt test --changed --port 3000
+        env:
+          PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
