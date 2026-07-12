@@ -1,0 +1,28 @@
+{
+  "name": "@uvt/cli",
+  "version": "0.1.0-alpha.1",
+  "bin": {
+    "uvt": "./dist/bin.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rimraf dist"
+  },
+  "dependencies": {
+    "@uvt/shared": "file:../shared",
+    "@uvt/config": "file:../config",
+    "@uvt/core": "file:../core",
+    "@uvt/reporter": "file:../reporter",
+    "@uvt/compatibility": "file:../compatibility",
+    "@uvt/sdk": "file:../sdk",
+    "@uvt/release": "file:../release",
+    "@uvt/docs": "file:../docs",
+    "commander": "^12.1.0",
+    "picocolors": "^1.0.1"
+  },
+  "devDependencies": {
+    "rimraf": "^5.0.7"
+  }
+}
