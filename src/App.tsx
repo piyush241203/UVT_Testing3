@@ -657,8 +657,8 @@ function Dashboard() {
 function Products() {
   return (
     <div className="space-y-4">
-      <h3 className="text-3xl font-extrabold text-blue-600 p-4 border-b-2 border-blue-200">Products (RC-02.1 Guaranteed Token Check)</h3>
-      <p>Tokens updated directly by the agent. Verifying!</p>
+      <h3 className="text-3xl font-extrabold text-blue-600 p-4 border-b-2 border-blue-200">Products (RC-02.1 No Newline)</h3>
+      <p>Tokens updated without newlines. Final validation!</p>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
         {[1, 2, 3, 4].map(id => (
           <div key={id} style={{ padding: '16px', border: '1px solid #eee', borderRadius: '10px' }}>
