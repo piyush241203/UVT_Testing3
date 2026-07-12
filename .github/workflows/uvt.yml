@@ -53,6 +53,6 @@ jobs:
           done
 
       - name: Run visual regression tests
-        run: ./node_modules/.bin/uvt test --changed --port 3000
+        run: node node_modules/@uvt/cli/dist/bin.js test --changed --port 3000
         env:
           PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
