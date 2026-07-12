@@ -186,8 +186,8 @@ function Sidebar({ visible }: { visible: boolean }) {
   if (!visible) return null;
   return (
     <aside style={{
-      width: '200px', minHeight: '100%', background: '#f0f0ff',
-      borderRight: '1px solid #ddd', padding: '16px', flexShrink: 0
+      width: '200px', minHeight: '100%', background: '#f3fff3',
+      borderRight: '2px solid #22c55e', padding: '16px', flexShrink: 0
     }}>
       <nav style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
         <Link to="/analytics">Analytics</Link>
@@ -215,17 +215,17 @@ function Layout({ children }: { children: React.ReactNode }) {
       <style>{`
         @keyframes skeletonPulse { 0%,100%{opacity:1} 50%{opacity:.5} }
         @keyframes slideIn { from{transform:translateX(100%)} to{transform:translateX(0)} }
-        nav a, nav button { color: #646cff; text-decoration: none; font-size: 14px; cursor: pointer; background: none; border: none; padding: 0; }
+        nav a, nav button { color: #e05d44; text-decoration: none; font-size: 14px; cursor: pointer; background: none; border: none; padding: 0; }
         nav a:hover, nav button:hover { text-decoration: underline; }
       `}</style>
       <header style={{
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
         borderBottom: '1px solid #ccc', padding: '12px 24px',
-        background: theme === 'light' ? '#fff' : '#242424'
+        background: theme === 'light' ? '#2a1a1a' : '#0f0f0f',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <button onClick={() => setSidebarOpen(v => !v)} style={{ background: 'none', border: '1px solid #ccc', borderRadius: '4px', padding: '4px 8px', cursor: 'pointer' }}>☰</button>
-          <h2 style={{ margin: 0 }}>UVT React Demo</h2>
+          <button onClick={() => setSidebarOpen(v => !v)} style={{ background: 'none', border: '1px solid #22c55e', borderRadius: '4px', padding: '4px 8px', cursor: 'pointer' }}>☰</button>
+          <h2 style={{ margin: 0, color: '#e05d44' }}>UVT React Demo v2</h2>
         </div>
         <nav style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
           <Link to="/">Home</Link>
@@ -241,7 +241,7 @@ function Layout({ children }: { children: React.ReactNode }) {
           <Link to="/profile">Profile</Link>
         </nav>
         <div style={{ display: 'flex', gap: '8px' }}>
-          <button onClick={() => setToast('Visual test triggered!')} style={{ cursor: 'pointer', padding: '6px 12px', background: '#646cff', color: '#fff', border: 'none', borderRadius: '6px' }}>
+          <button onClick={() => setToast('Visual test triggered!')} style={{ cursor: 'pointer', padding: '6px 12px', background: '#e05d44', color: '#fff', border: 'none', borderRadius: '6px' }}>
             Test Toast
           </button>
           <button onClick={() => setTheme(t => t === 'light' ? 'dark' : 'light')} style={{ cursor: 'pointer', padding: '6px 12px', background: 'transparent', border: '1px solid #ccc', borderRadius: '6px' }}>
@@ -447,8 +447,8 @@ function Analytics() {
       <h3>Analytics</h3>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '24px' }}>
         {[{ label: 'Builds', value: '1,842' }, { label: 'Snapshots', value: '24,901' }, { label: 'Pass Rate', value: '99.7%' }].map(m => (
-          <div key={m.label} style={{ padding: '16px', background: '#f5f5ff', borderRadius: '10px', textAlign: 'center' }}>
-            <div style={{ fontSize: '28px', fontWeight: 700, color: '#646cff' }}>{m.value}</div>
+          <div key={m.label} style={{ padding: '16px', background: '#fff7ed', borderRadius: '10px', textAlign: 'center', border: '1px solid #fed7aa' }}>
+            <div style={{ fontSize: '28px', fontWeight: 700, color: '#e05d44' }}>{m.value}</div>
             <div style={{ color: '#666' }}>{m.label}</div>
           </div>
         ))}
@@ -620,11 +620,11 @@ function Dashboard() {
   return (
     <div>
       <h3>Dashboard</h3>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '32px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginBottom: '24px' }}>
         {Object.entries(data.metrics).map(([k, v]) => (
-          <div key={k} style={{ padding: '20px', background: '#eef2ff', border: '1px solid #d0d7ff', borderRadius: '12px', textAlign: 'center', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
-            <div style={{ fontSize: '28px', fontWeight: 800, color: '#4f46e5' }}>{String(v)}</div>
-            <div style={{ color: '#4b5563', fontSize: '14px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{k}</div>
+          <div key={k} style={{ padding: '14px', background: '#fff7ed', borderRadius: '10px', textAlign: 'center', border: '1px solid #fed7aa' }}>
+            <div style={{ fontSize: '24px', fontWeight: 700, color: '#e05d44' }}>{String(v)}</div>
+            <div style={{ color: '#666', fontSize: '13px', textTransform: 'capitalize' }}>{k}</div>
           </div>
         ))}
       </div>
