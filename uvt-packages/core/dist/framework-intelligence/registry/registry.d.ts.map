@@ -1,0 +1,1 @@
+{"version":3,"file":"registry.d.ts","sourceRoot":"","sources":["../../../src/framework-intelligence/registry/registry.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,gBAAgB,EAAE,MAAM,qBAAqB,CAAC;AAEvD,qBAAa,iBAAiB;IAC5B,OAAO,CAAC,QAAQ,CAA0B;IAEnC,QAAQ,CAAC,OAAO,EAAE,gBAAgB,GAAG,IAAI;IAIzC,UAAU,CAAC,aAAa,EAAE,MAAM,GAAG,gBAAgB,GAAG,IAAI;CAIlE"}

@@ -1,0 +1,1 @@
+{"version":3,"file":"plugin-registry.d.ts","sourceRoot":"","sources":["../../../src/visual-stabilization/registry/plugin-registry.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,mBAAmB,EAAE,MAAM,qBAAqB,CAAC;AAE1D,qBAAa,cAAc;IACzB,OAAO,CAAC,OAAO,CAA+C;IAEvD,QAAQ,CAAC,MAAM,EAAE,mBAAmB,GAAG,IAAI;IAQ3C,UAAU,IAAI,mBAAmB,EAAE;IAKnC,UAAU,IAAI,IAAI;CAM1B"}

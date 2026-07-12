@@ -1,0 +1,1 @@
+{"version":3,"file":"heuristics.d.ts","sourceRoot":"","sources":["../../../src/visual-quality/metrics/heuristics.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,gBAAgB,EAAE,MAAM,qBAAqB,CAAC;AAEvD,qBAAa,gBAAgB;IACpB,QAAQ,CAAC,WAAW,EAAE,GAAG,GAAG,gBAAgB,EAAE;CAuBtD"}

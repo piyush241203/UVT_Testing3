@@ -1,0 +1,1 @@
+{"version":3,"file":"regression-engine.d.ts","sourceRoot":"","sources":["../../src/regressions/regression-engine.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,mBAAmB,EAAE,eAAe,EAAE,MAAM,sBAAsB,CAAC;AAE5E,qBAAa,gBAAgB;IACpB,iBAAiB,CAAC,OAAO,EAAE,mBAAmB,EAAE,QAAQ,EAAE,mBAAmB,GAAG,eAAe,EAAE;CA8BzG"}

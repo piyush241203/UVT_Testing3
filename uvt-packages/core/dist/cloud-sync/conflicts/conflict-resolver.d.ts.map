@@ -1,0 +1,1 @@
+{"version":3,"file":"conflict-resolver.d.ts","sourceRoot":"","sources":["../../../src/cloud-sync/conflicts/conflict-resolver.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,cAAc,EAAE,MAAM,qBAAqB,CAAC;AAErD,qBAAa,gBAAgB;IACf,OAAO,CAAC,MAAM;gBAAN,MAAM,GAAE,cAA6B;IAElD,OAAO,CAAC,aAAa,EAAE,GAAG,EAAE,cAAc,EAAE,GAAG,GAAG,GAAG;CAe7D"}

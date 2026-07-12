@@ -1,0 +1,1 @@
+{"version":3,"file":"models.js","sourceRoot":"","sources":["../../../../../src/visual-stabilization/plugins/temporal/models/models.ts"],"names":[],"mappings":";;;AASa,QAAA,uBAAuB,GAAmB;IACrD,OAAO,EAAE,IAAI;IACb,UAAU,EAAE,YAAY;IACxB,UAAU,EAAE,aAAa;IACzB,cAAc,EAAE,eAAe;IAC/B,eAAe,EAAE,OAAO;IACxB,aAAa,EAAE,OAAO;CACvB,CAAC"}

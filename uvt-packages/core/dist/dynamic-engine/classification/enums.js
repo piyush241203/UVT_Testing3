@@ -1,0 +1,62 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ExecutionPhase = exports.SignalRecommendation = exports.SignalSeverity = exports.SignalCategory = void 0;
+var SignalCategory;
+(function (SignalCategory) {
+    SignalCategory["DATE"] = "DATE";
+    SignalCategory["TIME"] = "TIME";
+    SignalCategory["CLOCK"] = "CLOCK";
+    SignalCategory["COUNTER"] = "COUNTER";
+    SignalCategory["RANDOM"] = "RANDOM";
+    SignalCategory["NETWORK"] = "NETWORK";
+    SignalCategory["AUTH"] = "AUTH";
+    SignalCategory["IMAGE"] = "IMAGE";
+    SignalCategory["VIDEO"] = "VIDEO";
+    SignalCategory["CANVAS"] = "CANVAS";
+    SignalCategory["SVG"] = "SVG";
+    SignalCategory["MAP"] = "MAP";
+    SignalCategory["CHART"] = "CHART";
+    SignalCategory["TABLE"] = "TABLE";
+    SignalCategory["GRID"] = "GRID";
+    SignalCategory["FORM"] = "FORM";
+    SignalCategory["STYLE"] = "STYLE";
+    SignalCategory["LAYOUT"] = "LAYOUT";
+    SignalCategory["ANIMATION"] = "ANIMATION";
+    SignalCategory["MEDIA"] = "MEDIA";
+    SignalCategory["REALTIME"] = "REALTIME";
+    SignalCategory["COMPONENT"] = "COMPONENT";
+    SignalCategory["FRAMEWORK"] = "FRAMEWORK";
+    SignalCategory["CUSTOM"] = "CUSTOM";
+})(SignalCategory || (exports.SignalCategory = SignalCategory = {}));
+var SignalSeverity;
+(function (SignalSeverity) {
+    SignalSeverity["CRITICAL"] = "CRITICAL";
+    SignalSeverity["HIGH"] = "HIGH";
+    SignalSeverity["MEDIUM"] = "MEDIUM";
+    SignalSeverity["LOW"] = "LOW";
+    SignalSeverity["INFO"] = "INFO";
+})(SignalSeverity || (exports.SignalSeverity = SignalSeverity = {}));
+var SignalRecommendation;
+(function (SignalRecommendation) {
+    SignalRecommendation["FREEZE"] = "FREEZE";
+    SignalRecommendation["MASK"] = "MASK";
+    SignalRecommendation["BLUR"] = "BLUR";
+    SignalRecommendation["HIDE"] = "HIDE";
+    SignalRecommendation["REPLACE"] = "REPLACE";
+    SignalRecommendation["OBSERVE"] = "OBSERVE";
+    SignalRecommendation["IGNORE"] = "IGNORE";
+    SignalRecommendation["UNKNOWN"] = "UNKNOWN";
+})(SignalRecommendation || (exports.SignalRecommendation = SignalRecommendation = {}));
+var ExecutionPhase;
+(function (ExecutionPhase) {
+    ExecutionPhase["INITIALIZATION"] = "INITIALIZATION";
+    ExecutionPhase["ROUTE_DISCOVERY"] = "ROUTE_DISCOVERY";
+    ExecutionPhase["TEST_GENERATION"] = "TEST_GENERATION";
+    ExecutionPhase["BEFORE_RENDER"] = "BEFORE_RENDER";
+    ExecutionPhase["RENDER"] = "RENDER";
+    ExecutionPhase["AFTER_RENDER"] = "AFTER_RENDER";
+    ExecutionPhase["NETWORK_IDLE"] = "NETWORK_IDLE";
+    ExecutionPhase["BEFORE_SNAPSHOT"] = "BEFORE_SNAPSHOT";
+    ExecutionPhase["POST_SNAPSHOT"] = "POST_SNAPSHOT";
+})(ExecutionPhase || (exports.ExecutionPhase = ExecutionPhase = {}));
+//# sourceMappingURL=enums.js.map

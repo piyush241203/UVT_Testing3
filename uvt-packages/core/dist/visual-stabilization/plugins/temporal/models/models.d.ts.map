@@ -1,0 +1,1 @@
+{"version":3,"file":"models.d.ts","sourceRoot":"","sources":["../../../../../src/visual-stabilization/plugins/temporal/models/models.ts"],"names":[],"mappings":"AAAA,MAAM,WAAW,cAAc;IAC7B,OAAO,EAAE,OAAO,CAAC;IACjB,UAAU,EAAE,MAAM,CAAC;IACnB,UAAU,EAAE,MAAM,CAAC;IACnB,cAAc,EAAE,MAAM,CAAC;IACvB,eAAe,EAAE,MAAM,CAAC;IACxB,aAAa,EAAE,MAAM,CAAC;CACvB;AAED,eAAO,MAAM,uBAAuB,EAAE,cAOrC,CAAC"}

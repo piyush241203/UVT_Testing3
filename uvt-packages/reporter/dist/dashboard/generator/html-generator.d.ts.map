@@ -1,0 +1,1 @@
+{"version":3,"file":"html-generator.d.ts","sourceRoot":"","sources":["../../../src/dashboard/generator/html-generator.ts"],"names":[],"mappings":"AAEA,OAAO,EAAE,gBAAgB,EAAE,MAAM,qBAAqB,CAAC;AAkBvD,qBAAa,kBAAkB;IAChB,QAAQ,CAAC,OAAO,EAAE,gBAAgB,EAAE,MAAM,EAAE,MAAM,GAAG,OAAO,CAAC,MAAM,CAAC;CAkJlF"}

@@ -1,0 +1,1 @@
+{"version":3,"file":"scoring-engine.d.ts","sourceRoot":"","sources":["../../../src/visual-quality/scoring/scoring-engine.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,mBAAmB,EAAE,gBAAgB,EAAE,mBAAmB,EAAE,MAAM,qBAAqB,CAAC;AAEjG,qBAAa,aAAa;IACjB,cAAc,CACnB,UAAU,EAAE,gBAAgB,EAAE,EAC9B,WAAW,EAAE,mBAAmB,EAAE,EAClC,cAAc,EAAE,MAAM,EACtB,aAAa,EAAE,MAAM,GACpB,mBAAmB;CAuCvB"}

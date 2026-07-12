@@ -1,0 +1,1 @@
+{"version":3,"file":"stability-detector.d.ts","sourceRoot":"","sources":["../../../src/adaptive-mutation-intelligence/scheduler/stability-detector.ts"],"names":[],"mappings":"AAAA,MAAM,WAAW,eAAe;IAC9B,aAAa,EAAE,MAAM,CAAC;IACtB,iBAAiB,EAAE,MAAM,CAAC;CAC3B;AAED,qBAAa,iBAAiB;WACd,SAAS,CAAC,IAAI,EAAE,MAAM,GAAG,UAAU,GAAG,QAAQ,GAAG,eAAe;CAW/E"}

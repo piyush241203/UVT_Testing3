@@ -1,0 +1,1 @@
+{"version":3,"file":"form-classifier.d.ts","sourceRoot":"","sources":["../../../src/runtime-dom-intelligence/classifiers/form-classifier.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,UAAU,EAAE,WAAW,EAAE,MAAM,qBAAqB,CAAC;AAC9D,OAAO,EAAE,aAAa,EAAkD,MAAM,+BAA+B,CAAC;AAE9G,qBAAa,cAAe,YAAW,UAAU;IAC/C,SAAgB,IAAI,oBAAoB;IAExC,QAAQ,CAAC,QAAQ,EAAE,WAAW,GAAG,aAAa,EAAE;CA+BjD"}

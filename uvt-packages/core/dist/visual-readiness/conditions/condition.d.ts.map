@@ -1,0 +1,1 @@
+{"version":3,"file":"condition.d.ts","sourceRoot":"","sources":["../../../src/visual-readiness/conditions/condition.ts"],"names":[],"mappings":"AAAA,MAAM,WAAW,kBAAkB;IACjC,EAAE,EAAE,MAAM,CAAC;IACX,QAAQ,IAAI,MAAM,CAAC;IACnB,UAAU,CAAC,IAAI,EAAE,GAAG,GAAG,OAAO,CAAC,IAAI,CAAC,CAAC;IACrC,KAAK,IAAI,OAAO,CAAC,OAAO,CAAC,CAAC;IAC1B,OAAO,IAAI,IAAI,CAAC;CACjB"}

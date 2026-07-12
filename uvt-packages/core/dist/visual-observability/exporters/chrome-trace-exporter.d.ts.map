@@ -1,0 +1,1 @@
+{"version":3,"file":"chrome-trace-exporter.d.ts","sourceRoot":"","sources":["../../../src/visual-observability/exporters/chrome-trace-exporter.ts"],"names":[],"mappings":"AAEA,OAAO,EAAE,cAAc,EAAE,aAAa,EAAE,MAAM,qBAAqB,CAAC;AAEpE,qBAAa,mBAAoB,YAAW,aAAa;IACjD,MAAM,CAAC,KAAK,EAAE,cAAc,GAAG,OAAO,CAAC,IAAI,CAAC;CAiBnD"}
