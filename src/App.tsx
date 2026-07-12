@@ -409,11 +409,11 @@ function Team() {
       <h3>Team</h3>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}>
         {members.map(m => (
-          <div key={m.name} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '16px', border: '1px solid #eee', borderRadius: '8px' }}>
+          <div key={m.name} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '16px', border: '1px solid #cbd5e1', borderRadius: '12px', background: '#f8fafc' }}>
             <RandomAvatar seed={m.seed} />
             <div>
-              <div style={{ fontWeight: 600 }}>{m.name}</div>
-              <div style={{ color: '#666', fontSize: '13px' }}>{m.role}</div>
+              <div style={{ fontWeight: 600, color: '#1e293b' }}>{m.name}</div>
+              <div style={{ color: '#64748b', fontSize: '13px' }}>{m.role}</div>
             </div>
           </div>
         ))}
@@ -423,16 +423,16 @@ function Team() {
 }
 
 function Careers() {
-  const jobs = ['Senior Frontend Engineer', 'Visual Testing Advocate', 'SDK Integrations Engineer'];
+  const jobs = ['Senior Frontend Engineer', 'Visual Testing Advocate', 'SDK Integrations Engineer', 'Cloud Architect'];
   return (
     <div>
-      <h3>Careers</h3>
-      <p>Join our team. We're hiring!</p>
+      <h3>Careers at UVT</h3>
+      <p>Join our team. We're hiring globally!</p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
         {jobs.map(j => (
-          <div key={j} style={{ padding: '16px', border: '1px solid #eee', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span>{j}</span>
-            <button style={{ padding: '6px 14px', background: '#646cff', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>Apply</button>
+          <div key={j} style={{ padding: '16px', border: '1px solid #e2e8f0', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#fff' }}>
+            <span style={{ fontWeight: 500 }}>{j}</span>
+            <button style={{ padding: '6px 14px', background: '#8b5cf6', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}>Apply Now</button>
           </div>
         ))}
       </div>
@@ -722,6 +722,154 @@ function Settings() {
 }
 
 // =====================================================
+// RC-02 FINAL QUALIFICATION EXPANSION
+// =====================================================
+function ChartMock() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    let animId: number;
+    let offset = 0;
+    const render = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.beginPath();
+      for (let i = 0; i < canvas.width; i += 10) {
+        const y = 50 + Math.sin((i + offset) * 0.05) * 30;
+        ctx.lineTo(i, y);
+      }
+      ctx.strokeStyle = '#42b883';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+      offset += 2;
+      animId = requestAnimationFrame(render);
+    };
+    render();
+    return () => cancelAnimationFrame(animId);
+  }, []);
+  return (
+    <div style={{ padding: '16px', background: '#fff', border: '1px solid #ddd', borderRadius: '8px', marginBottom: '16px' }}>
+      <h4>Live Analytics Chart (Chart.js / Recharts Mock)</h4>
+      <canvas data-uvt-dynamic="canvas-chart" ref={canvasRef} width="600" height="150" style={{ display: 'block', width: '100%' }} />
+    </div>
+  );
+}
+
+function DataTable() {
+  const data = Array.from({ length: 10 }).map((_, i) => ({
+    id: `row-\${i}-\${Math.random().toString(36).substring(7)}`,
+    user: `User \${Math.floor(Math.random() * 1000)}`,
+    status: Math.random() > 0.5 ? 'Active' : 'Pending',
+    date: new Date(Date.now() - Math.random() * 10000000000).toLocaleDateString()
+  }));
+  return (
+    <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '16px' }}>
+      <thead>
+        <tr style={{ background: '#f1f5f9' }}>
+          <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #cbd5e1' }}>ID</th>
+          <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #cbd5e1' }}>User</th>
+          <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #cbd5e1' }}>Status</th>
+          <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #cbd5e1' }}>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        {data.map(row => (
+          <tr key={row.id}>
+            <td style={{ padding: '12px', borderBottom: '1px solid #e2e8f0' }} className="dynamic-uuid" data-uvt-dynamic="uuid">{row.id}</td>
+            <td style={{ padding: '12px', borderBottom: '1px solid #e2e8f0' }} data-uvt-dynamic="random-text">{row.user}</td>
+            <td style={{ padding: '12px', borderBottom: '1px solid #e2e8f0' }}>{row.status}</td>
+            <td style={{ padding: '12px', borderBottom: '1px solid #e2e8f0' }}>{row.date}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
+function Accordion() {
+  const [openIdx, setOpenIdx] = useState<number | null>(0);
+  return (
+    <div style={{ border: '1px solid #ddd', borderRadius: '8px', marginBottom: '16px', overflow: 'hidden' }}>
+      {['Overview', 'Advanced Settings', 'Danger Zone'].map((title, idx) => (
+        <div key={title} style={{ borderBottom: idx === 2 ? 'none' : '1px solid #ddd' }}>
+          <div 
+            onClick={() => setOpenIdx(openIdx === idx ? null : idx)}
+            style={{ padding: '16px', background: '#f8fafc', cursor: 'pointer', fontWeight: 600, display: 'flex', justifyContent: 'space-between' }}
+          >
+            {title}
+            <span>{openIdx === idx ? '▲' : '▼'}</span>
+          </div>
+          {openIdx === idx && (
+            <div style={{ padding: '16px', background: '#fff' }}>
+              Content for {title}. <LiveClock />
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function Tabs() {
+  const [tab, setTab] = useState('data');
+  return (
+    <div style={{ marginBottom: '16px' }}>
+      <div style={{ display: 'flex', borderBottom: '1px solid #ddd' }}>
+        {['data', 'chart', 'logs'].map(t => (
+          <button 
+            key={t}
+            onClick={() => setTab(t)}
+            style={{ padding: '12px 24px', border: 'none', background: tab === t ? '#fff' : 'transparent', borderBottom: tab === t ? '2px solid #3b82f6' : 'none', cursor: 'pointer', textTransform: 'capitalize', fontWeight: tab === t ? 600 : 400 }}
+          >
+            {t}
+          </button>
+        ))}
+      </div>
+      <div style={{ padding: '24px', background: '#fff', border: '1px solid #ddd', borderTop: 'none', borderRadius: '0 0 8px 8px' }}>
+        {tab === 'data' && <DataTable />}
+        {tab === 'chart' && <ChartMock />}
+        {tab === 'logs' && <DynamicTokens />}
+      </div>
+    </div>
+  );
+}
+
+function Reports() {
+  return (
+    <div className="space-y-6">
+      <h3 className="text-3xl font-extrabold text-indigo-600 p-4 border-b-2 border-indigo-200">System Reports</h3>
+      <Tabs />
+    </div>
+  );
+}
+
+function Billing() {
+  return (
+    <div className="space-y-6">
+      <h3 className="text-3xl font-extrabold text-green-600 p-4 border-b-2 border-green-200">Billing</h3>
+      <Accordion />
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
+        {[
+          { plan: 'Hobby', price: '$0', current: true },
+          { plan: 'Pro', price: '$29', current: false },
+          { plan: 'Enterprise', price: 'Custom', current: false }
+        ].map(p => (
+          <div key={p.plan} style={{ padding: '24px', border: p.current ? '2px solid #10b981' : '1px solid #ddd', borderRadius: '12px', textAlign: 'center' }}>
+            <h4 style={{ margin: '0 0 8px' }}>{p.plan}</h4>
+            <div style={{ fontSize: '32px', fontWeight: 800, color: '#1f2937', marginBottom: '16px' }}>{p.price}</div>
+            <button style={{ width: '100%', padding: '12px', background: p.current ? '#10b981' : '#f3f4f6', color: p.current ? '#fff' : '#374151', border: 'none', borderRadius: '6px', fontWeight: 600 }}>
+              {p.current ? 'Current Plan' : 'Upgrade'}
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// =====================================================
 // APP ROOT
 // =====================================================
 export default function App() {
@@ -744,6 +892,8 @@ export default function App() {
           <Route path="/search" element={<Search />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/reports" element={<Reports />} />
+          <Route path="/billing" element={<Billing />} />
           {/* Protected routes */}
           <Route element={<ProtectedRoute />}>
             <Route path="/analytics" element={<Analytics />} />
