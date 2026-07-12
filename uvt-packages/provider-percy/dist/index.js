@@ -40,106 +40,24 @@ exports.PercyProvider = void 0;
 const playwright_1 = __importDefault(require("@percy/playwright"));
 const shared_1 = require("@uvt/shared");
 const http = __importStar(require("http"));
-const fs = __importStar(require("fs"));
-const path = __importStar(require("path"));
-const os = __importStar(require("os"));
-const child_process_1 = require("child_process");
 class PercyProvider {
     name = 'percy';
     apiVersion = 1;
     percyRunning = false;
-    startedPercyProcess = null;
     async initialize(options) {
         shared_1.logger.debug('Percy Provider initializing...');
         if (options.isSelective) {
-            process.env.PERCY_PARTIAL_BUILD = '1';
-            shared_1.logger.info('Selective run detected. Enabled Percy Partial Build mode (PERCY_PARTIAL_BUILD=1).');
+            shared_1.logger.info('Selective run detected. Percy Partial Build mode temporarily DISABLED for diagnostic audit.');
         }
         // Check if Percy agent is running
-        this.percyRunning = await this.checkPercyAgent();
-        if (!this.percyRunning) {
-            // Clear stale lock files before attempting to start
-            await this.clearStalePercyLock();
-            // Re-check after clearing — a parallel engine instance may have started Percy
-            // in the time between our first check and the lock cleanup
-            this.percyRunning = await this.checkPercyAgent();
-        }
-        if (!this.percyRunning) {
-            shared_1.logger.info('Percy agent not detected. Starting Percy CLI server in background...');
-            try {
-                const percyProc = (0, child_process_1.exec)('npx percy exec:start', { cwd: options.cwd, env: process.env });
-                // Log child process logs for debugging
-                percyProc.stdout?.on('data', (data) => shared_1.logger.info(`[Percy CLI Out]: ${data.toString().trim()}`));
-                percyProc.stderr?.on('data', (data) => shared_1.logger.info(`[Percy CLI Err]: ${data.toString().trim()}`));
-                // Poll health check every 1000ms up to 60 times (60s max wait time to allow Chromium downloads).
-                // Also handles the race where a parallel engine instance won the spawn race —
-                // Percy will be reachable even if our spawn got rejected with 'port already in use'.
-                let isStarted = false;
-                for (let i = 0; i < 60; i++) {
-                    await new Promise((resolve) => setTimeout(resolve, 1000));
-                    if (await this.checkPercyAgent()) {
-                        isStarted = true;
-                        break;
-                    }
-                }
-                this.percyRunning = isStarted;
-                if (this.percyRunning) {
-                    shared_1.logger.success('Percy CLI server started and connected successfully in background.');
-                    this.startedPercyProcess = percyProc;
-                }
-                else {
-                    throw new Error('Failed to auto-start Percy agent. Please ensure you run visual tests wrapped with Percy CLI or check your PERCY_TOKEN, e.g.:\n' +
-                        '  npx percy exec -- uvt run');
-                }
-            }
-            catch (err) {
-                throw new Error(`Error trying to start Percy agent: ${err.message}`);
-            }
-        }
-        else {
+        this.percyRunning = !!process.env.PERCY_SERVER_ADDRESS || await this.checkPercyAgent();
+        if (this.percyRunning) {
             shared_1.logger.success('Percy agent detected and connected successfully.');
         }
-    }
-    /**
-     * Removes stale Percy agent lock files and kills orphan processes on port 5338.
-     * This prevents "port already in use" errors between consecutive uvt run invocations.
-     */
-    async clearStalePercyLock() {
-        const percyDir = path.join(os.homedir(), '.percy');
-        const lockPattern = /^agent-\d+\.lock$/;
-        try {
-            if (fs.existsSync(percyDir)) {
-                const files = fs.readdirSync(percyDir);
-                for (const file of files) {
-                    if (lockPattern.test(file)) {
-                        const lockPath = path.join(percyDir, file);
-                        fs.rmSync(lockPath, { force: true });
-                        shared_1.logger.debug(`Removed stale Percy lock file: ${lockPath}`);
-                    }
-                }
-            }
+        else {
+            shared_1.logger.warn('Percy agent not detected. UVT is running in standalone mode.');
+            shared_1.logger.warn('To upload to Percy, wrap your test command: `npx percy exec -- npx uvt test`');
         }
-        catch (e) {
-            shared_1.logger.debug(`Could not clear Percy lock files: ${e.message}`);
-        }
-        // On Windows: kill process using port 5338 (if any)
-        try {
-            if (process.platform === 'win32') {
-                (0, child_process_1.execSync)('for /f "tokens=5" %a in (\'netstat -aon ^| findstr :5338\') do taskkill /F /PID %a', {
-                    shell: 'cmd.exe',
-                    stdio: 'ignore'
-                });
-            }
-            else {
-                (0, child_process_1.execSync)('fuser -k 5338/tcp', { stdio: 'ignore' });
-            }
-            shared_1.logger.debug('Cleared orphan process on Percy port 5338.');
-        }
-        catch {
-            // No process was running — this is expected and fine
-        }
-        // Brief pause to allow OS to release the port
-        await new Promise((resolve) => setTimeout(resolve, 500));
     }
     async snapshot(page, opts) {
         if (!page) {
@@ -165,15 +83,6 @@ class PercyProvider {
     async finalize() {
         if (this.percyRunning) {
             shared_1.logger.success('All snapshots sent to Percy successfully.');
-        }
-        if (this.startedPercyProcess) {
-            shared_1.logger.info('Stopping background Percy CLI server...');
-            try {
-                (0, child_process_1.exec)('npx percy exec:stop', { cwd: process.cwd() });
-                await new Promise((resolve) => setTimeout(resolve, 2000));
-                this.startedPercyProcess.kill();
-            }
-            catch { }
         }
     }
     checkPercyAgent() {

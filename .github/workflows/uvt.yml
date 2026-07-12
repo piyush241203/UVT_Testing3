@@ -125,6 +125,6 @@ jobs:
           done
 
       - name: Run visual regression tests
-        run: npx uvt test --changed --port 3000
+        run: npx percy exec -- npx uvt test --changed --port 3000
         env:
           PERCY_TOKEN: \\${{ secrets.PERCY_TOKEN }}
