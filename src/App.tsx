@@ -657,8 +657,8 @@ function Dashboard() {
 function Products() {
   return (
     <div className="space-y-4">
-      <h3 className="text-2xl font-black text-indigo-700 p-4 bg-indigo-100 rounded-md">Products (UI Validation 2)</h3>
-      <p>Browse our catalog of items. Let's see if Percy catches this change!</p>
+      <h3 className="text-2xl font-black text-indigo-700 p-4 bg-indigo-100 rounded-md">Products (RC-02.1 Auth Validation)</h3>
+      <p>Browse our catalog of items. Validating Percy Auth Pipeline!</p>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
         {[1, 2, 3, 4].map(id => (
           <div key={id} style={{ padding: '16px', border: '1px solid #eee', borderRadius: '10px' }}>
