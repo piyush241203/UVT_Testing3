@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { BrowserRouter, Routes, Route, Link, useParams, Navigate, Outlet } from 'react-router-dom';
 
 // =====================================================
-// DYNAMIC ELEMENTS — Stress-Test for UVT DSE
+// DYNAMIC ELEMENTS - REFRESHED — Stress-Test for UVT DSE
 // =====================================================
 function LiveClock() {
   const [time, setTime] = useState(new Date().toLocaleTimeString());
@@ -503,7 +503,7 @@ function Orders() {
 function Notifications() {
   const [items] = useState([
     { id: 1, type: 'success', msg: 'Build #1842 passed — all snapshots approved.' },
-    { id: 2, type: 'warning', msg: '3 dynamic elements detected on /dashboard.' },
+    { id: 2, type: 'warning', msg: '3 DYNAMIC ELEMENTS - REFRESHED detected on /dashboard.' },
     { id: 3, type: 'info', msg: 'New team member Carol joined the workspace.' },
     { id: 4, type: 'error', msg: 'Build #1839 failed — 2 visual differences found.' },
   ]);
