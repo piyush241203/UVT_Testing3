@@ -67,7 +67,7 @@ jobs:
           
           echo "======================="
         env:
-          PERCY_TOKEN: \\${{ secrets.PERCY_TOKEN }}
+          PERCY_TOKEN: \${{ secrets.PERCY_TOKEN }}
       - name: Ensure UVT CLI is installed
         run: |
           if ! npx uvt --version &>/dev/null; then
@@ -83,7 +83,7 @@ jobs:
           fi
       - name: Validate Percy Authentication (Independent Test)
         run: |
-          if [ -n "\\${{ secrets.PERCY_TOKEN }}" ]; then
+          if [ -n "\${{ secrets.PERCY_TOKEN }}" ]; then
             echo "Running minimal independent Percy authentication test..."
             npx percy exec -- echo "Percy Authenticated Independently" || {
               echo "Percy independent authentication failed! This proves it's not a UVT issue."
@@ -93,14 +93,14 @@ jobs:
             echo "No PERCY_TOKEN provided, skipping auth check."
           fi
         env:
-          PERCY_TOKEN: \\${{ secrets.PERCY_TOKEN }}
+          PERCY_TOKEN: \${{ secrets.PERCY_TOKEN }}
 
       - name: Cache Playwright Browsers
         id: playwright-cache
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: \\${{ runner.os }}-playwright-\\${{ hashFiles('**/package-lock.json') }}
+          key: \${{ runner.os }}-playwright-\${{ hashFiles('**/package-lock.json') }}
 
       - name: Install Playwright Browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
@@ -110,7 +110,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.local/share/percy
-          key: \\${{ runner.os }}-percy-\\${{ hashFiles('**/package-lock.json') }}
+          key: \${{ runner.os }}-percy-\${{ hashFiles('**/package-lock.json') }}
 
       - name: Build frontend application
         run: npm run build --if-present
@@ -127,4 +127,4 @@ jobs:
       - name: Run visual regression tests
         run: npx percy exec -- npx uvt test --changed --port 3000
         env:
-          PERCY_TOKEN: \\${{ secrets.PERCY_TOKEN }}
+          PERCY_TOKEN: \${{ secrets.PERCY_TOKEN }}

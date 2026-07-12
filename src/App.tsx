@@ -432,7 +432,9 @@ function Careers() {
         {jobs.map(j => (
           <div key={j} style={{ padding: '16px', border: '1px solid #e2e8f0', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#fff' }}>
             <span style={{ fontWeight: 500 }}>{j}</span>
-            <button style={{ padding: '6px 14px', background: '#8b5cf6', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}>Apply Now</button>
+            <button style={{ background: '#3b82f6', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ fontSize: '18px' }}>🚀</span> New Test Launch
+            </button>
           </div>
         ))}
       </div>
@@ -759,8 +761,8 @@ function ChartMock() {
 
 function DataTable() {
   const data = Array.from({ length: 10 }).map((_, i) => ({
-    id: `row-\${i}-\${Math.random().toString(36).substring(7)}`,
-    user: `User \${Math.floor(Math.random() * 1000)}`,
+    id: 'row-' + i + '-' + Math.random().toString(36).substring(7),
+    user: 'User ' + Math.floor(Math.random() * 1000),
     status: Math.random() > 0.5 ? 'Active' : 'Pending',
     date: new Date(Date.now() - Math.random() * 10000000000).toLocaleDateString()
   }));
