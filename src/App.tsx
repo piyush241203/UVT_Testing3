@@ -655,9 +655,11 @@ function Dashboard() {
 }
 
 function Products() {
+  const products = [1, 2, 3, 4, 5, 6, 7, 8];
   return (
-    <div>
-      <h3>Products</h3>
+    <div className="space-y-4">
+      <h3 className="text-xl font-bold text-red-500">Products (RC-02 Updated)</h3>
+      <p>Browse our catalog of items. Now with extra padding.</p>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
         {[1, 2, 3, 4].map(id => (
           <div key={id} style={{ padding: '16px', border: '1px solid #eee', borderRadius: '10px' }}>
