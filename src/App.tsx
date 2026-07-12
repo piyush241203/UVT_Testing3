@@ -223,9 +223,9 @@ function Layout({ children }: { children: React.ReactNode }) {
         borderBottom: '1px solid #ccc', padding: '12px 24px',
         background: theme === 'light' ? '#2a1a1a' : '#0f0f0f',
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <button onClick={() => setSidebarOpen(v => !v)} style={{ background: 'none', border: '1px solid #22c55e', borderRadius: '4px', padding: '4px 8px', cursor: 'pointer' }}>☰</button>
-          <h2 style={{ margin: 0, color: '#e05d44' }}>UVT React Demo v2</h2>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <button onClick={() => setSidebarOpen(v => !v)} style={{ background: '#22c55e', color: '#fff', border: 'none', borderRadius: '8px', padding: '6px 12px', cursor: 'pointer', fontSize: '16px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>☰ Menu</button>
+          <h2 style={{ margin: 0, color: '#ff3e00', fontWeight: '800', letterSpacing: '-0.5px' }}>🚀 UVT React Demo v3</h2>
         </div>
         <nav style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
           <Link to="/">Home</Link>
