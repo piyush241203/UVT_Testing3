@@ -657,8 +657,8 @@ function Dashboard() {
 function Products() {
   return (
     <div className="space-y-4">
-      <h3 className="text-2xl font-black text-indigo-700 p-4 bg-indigo-100 rounded-md">Products (RC-02.1 Auth Validation)</h3>
-      <p>Browse our catalog of items. Validating Percy Auth Pipeline!</p>
+      <h3 className="text-3xl font-extrabold text-blue-600 p-4 border-b-2 border-blue-200">Products (RC-02.1 Final Test)</h3>
+      <p>Browse our catalog of items. Let's verify Percy authentication this time!</p>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
         {[1, 2, 3, 4].map(id => (
           <div key={id} style={{ padding: '16px', border: '1px solid #eee', borderRadius: '10px' }}>
