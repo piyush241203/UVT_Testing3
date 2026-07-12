@@ -32,16 +32,39 @@ jobs:
           echo "Framework       : React"
           echo "CLI Source      : Published Package"
           echo "Node            : \$(node -v)"
+          echo "Working Dir     : \$(pwd)"
+          
           if npx playwright --version &>/dev/null; then
             echo "Playwright      : Installed"
           else
             echo "Playwright      : Not Installed"
           fi
+          
+          echo "=== Percy Diagnostics ==="
           if [ -n "\$PERCY_TOKEN" ]; then
-            echo "Percy           : Configured"
+            echo "PERCY_TOKEN: Present"
+            echo "Length: \${#PERCY_TOKEN}"
+            MASKED_TOKEN="\${PERCY_TOKEN:0:4}****\${PERCY_TOKEN: -4}"
+            echo "Masked: \$MASKED_TOKEN"
           else
-            echo "Percy           : Not Configured"
+            echo "PERCY_TOKEN: Not Present"
           fi
+          
+          if npx percy --version &>/dev/null; then
+            echo "Percy CLI: \$(npx percy --version)"
+          else
+            echo "Percy CLI: Not Installed"
+          fi
+          
+          if npm ls @percy/playwright &>/dev/null; then
+            echo "@percy/playwright: \$(npm ls @percy/playwright | grep @percy/playwright)"
+          else
+            echo "@percy/playwright: Not Installed or not found in npm ls"
+          fi
+          
+          echo "--- Percy Environment Variables ---"
+          env | grep PERCY || echo "No other PERCY_* vars found"
+          
           echo "======================="
         env:
           PERCY_TOKEN: \\${{ secrets.PERCY_TOKEN }}
@@ -58,11 +81,12 @@ jobs:
               exit 1
             }
           fi
-      - name: Validate Percy Authentication
+      - name: Validate Percy Authentication (Independent Test)
         run: |
           if [ -n "\\${{ secrets.PERCY_TOKEN }}" ]; then
-            npx percy exec -- echo "Percy Authentication Successful" || {
-              echo "Percy authentication failed! Check your PERCY_TOKEN."
+            echo "Running minimal independent Percy authentication test..."
+            npx percy exec -- echo "Percy Authenticated Independently" || {
+              echo "Percy independent authentication failed! This proves it's not a UVT issue."
               exit 1
             }
           else
