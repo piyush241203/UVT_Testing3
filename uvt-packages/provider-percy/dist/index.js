@@ -122,7 +122,7 @@ class PercyProvider {
                     clearInterval(interval);
                     resolve(true);
                 }
-                else if (attempts > 20) {
+                else if (attempts > 60) {
                     clearInterval(interval);
                     resolve(false);
                 }
