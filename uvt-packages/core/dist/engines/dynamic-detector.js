@@ -86,6 +86,7 @@ class DynamicDetector {
             else if (sig.category === 'CUSTOM' && sig.analyzerType === 'dom')
                 source = 'dom';
             return {
+                selector: sig.selector,
                 source,
                 confidence: sig.confidence / 100, // old scale was 0-1
                 maskingStrategy: source === 'network' ? 'blur' : (sig.subtype === 'stripe' ? 'opaque' : 'blur')

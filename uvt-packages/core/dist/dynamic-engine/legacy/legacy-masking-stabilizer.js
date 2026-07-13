@@ -177,7 +177,10 @@ class LegacyMaskingStabilizer {
                     '[id*="date" i]', '[id*="time" i]', '[id*="clock" i]',
                     '[class*="date" i]', '[class*="time" i]', '[class*="clock" i]',
                     '[id*="token" i]', '[class*="token" i]',
-                    '[id*="uuid" i]', '[class*="uuid" i]'
+                    '[id*="uuid" i]', '[class*="uuid" i]',
+                    '[data-uvt-dynamic]', '[data-uvt-dynamic] *',
+                    'canvas', 'img[src*="avatar" i]', 'img[src*="pravatar" i]',
+                    '[class*="avatar" i]', '[id*="avatar" i]'
                 ];
                 dynamicSelectors.forEach(sel => {
                     try {
