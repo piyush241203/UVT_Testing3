@@ -52,6 +52,14 @@ exports.program
     .description('Universal Visual Testing (UVT) Command Line Tool')
     .version('0.1.0-alpha.1');
 function detectPackageManager(cwd) {
+    if (fs.existsSync(path.join(cwd, 'pnpm-lock.yaml')))
+        return 'pnpm';
+    if (fs.existsSync(path.join(cwd, 'yarn.lock')))
+        return 'yarn';
+    if (fs.existsSync(path.join(cwd, 'bun.lockb')) || fs.existsSync(path.join(cwd, 'bun.lock')) || fs.existsSync(path.join(cwd, 'bun.config.js')))
+        return 'bun';
+    if (fs.existsSync(path.join(cwd, 'package-lock.json')))
+        return 'npm';
     let current = cwd;
     while (true) {
         if (fs.existsSync(path.join(current, 'pnpm-lock.yaml')))
@@ -72,6 +80,13 @@ function detectPackageManager(cwd) {
     return 'npm';
 }
 function detectWorkspace(cwd) {
+    // If we are clearly inside an example folder that is meant to be standalone
+    if (fs.existsSync(path.join(cwd, 'package.json')) && !fs.existsSync(path.join(cwd, 'pnpm-workspace.yaml'))) {
+        // Check if it's a sub-package
+        const parent = path.dirname(cwd);
+        if (path.basename(parent) === 'examples')
+            return false;
+    }
     let current = cwd;
     while (true) {
         if (fs.existsSync(path.join(current, 'pnpm-workspace.yaml')) ||
@@ -502,12 +517,10 @@ export default {
     // 5. Scaffold GitHub Action workflow
     const githubWorkflowDir = path.join(cwd, '.github', 'workflows');
     const githubWorkflowPath = path.join(githubWorkflowDir, 'uvt.yml');
-    if (!fs.existsSync(githubWorkflowPath)) {
-        fs.mkdirSync(githubWorkflowDir, { recursive: true });
-        const actionYaml = generateGHAWorkflow(cwd);
-        fs.writeFileSync(githubWorkflowPath, actionYaml, 'utf-8');
-        shared_1.logger.success('Scaffolded GitHub Action workflow at .github/workflows/uvt.yml');
-    }
+    fs.mkdirSync(githubWorkflowDir, { recursive: true });
+    const actionYaml = generateGHAWorkflow(cwd);
+    fs.writeFileSync(githubWorkflowPath, actionYaml, 'utf-8');
+    shared_1.logger.success('Scaffolded GitHub Action workflow at .github/workflows/uvt.yml');
     // 6. Create ignore files
     const gitignorePath = path.join(cwd, '.gitignore');
     let gitignoreContent = '';

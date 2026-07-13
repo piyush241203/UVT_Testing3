@@ -112,6 +112,10 @@ jobs:
           done
 
       - name: Run visual regression tests
-        run: npx percy exec -- npx uvt test --changed --port 3000
+        run: npx uvt test --changed --port 3000
         env:
           PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+          
+      - name: Teardown background processes
+        if: always()
+        run: pkill -f "vite" || true

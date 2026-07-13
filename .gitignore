@@ -4,3 +4,9 @@ node_modules/
 .nuxt/
 .uvt/
 tests/generated/
+
+/node_modules/
+/.next/
+/.nuxt/
+/.uvt/
+/tests/generated/

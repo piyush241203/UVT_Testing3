@@ -65,7 +65,8 @@ class PlaywrightProvider {
             throw new Error('Playwright page instance is required for native snapshots.');
         }
         const { name, url, route } = opts;
-        const filename = `${name}.png`;
+        const safeName = name.replace(/[\/\\?%*:|"<>]/g, '-');
+        const filename = `${safeName}.png`;
         const latestPath = path.join(this.latestDir, filename);
         const baselinePath = path.join(this.baselineDir, filename);
         const diffPath = path.join(this.diffDir, filename);

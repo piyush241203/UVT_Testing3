@@ -31,7 +31,7 @@ async function resolveFrameworkAsync(repo, plugins) {
         if (plugin.apiVersion !== 1)
             continue;
         // If the plugin name vaguely matches the RIE framework, prioritize it!
-        if (detectedFrameworkName !== 'Static HTML' &&
+        if ((detectedFrameworkName !== 'Static HTML' || plugin.name === 'html') &&
             (plugin.name.toLowerCase().includes(detectedFrameworkName.toLowerCase()) ||
                 detectedFrameworkName.toLowerCase().includes(plugin.name.toLowerCase().replace('framework-', '')))) {
             bestPlugin = plugin;

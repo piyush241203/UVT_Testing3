@@ -58,6 +58,15 @@ async function scanProject(context, frameworkDetails) {
         const appFiles = await (0, fast_glob_1.default)('**/page.{js,jsx,ts,tsx}', { cwd: path.join(context.cwd, 'src', 'app') });
         if (appFiles.length > 0)
             pagesCount = appFiles.length;
+        // Fallback/HTML scan
+        if (frameworkDetails.name.toLowerCase() === 'html' || frameworkDetails.name === 'Static HTML') {
+            const htmlFiles = await (0, fast_glob_1.default)('**/*.html', {
+                cwd: context.cwd,
+                ignore: ['**/node_modules/**', '**/dist/**', '**/out/**', '**/uvt-packages/**', '**/uvt-report/**']
+            });
+            if (htmlFiles.length > 0)
+                pagesCount = htmlFiles.length;
+        }
         const compFiles = await (0, fast_glob_1.default)('{src,app,components}/**/*.{jsx,tsx,vue,svelte}', { cwd: context.cwd });
         if (compFiles.length > pagesCount)
             componentsCount = compFiles.length - pagesCount;

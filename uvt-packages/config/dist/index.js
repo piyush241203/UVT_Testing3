@@ -67,8 +67,10 @@ exports.configSchema = zod_1.z.object({
 // ==========================================
 // Default Configuration
 // ==========================================
+// Visual comparison service provider ("percy" or "playwright")
+// Add provider: 'playwright',if needed
 exports.DEFAULT_CONFIG = {
-    provider: 'playwright',
+    provider: 'percy',
     framework: 'auto',
     cache: true,
     workers: 'auto',

@@ -52,6 +52,7 @@ const provider_percy_1 = require("@uvt/provider-percy");
 const repository_analyzer_js_1 = require("./engines/repository-analyzer.js");
 const network_analyzer_js_1 = require("./engines/network-analyzer.js");
 const selective_testing_js_1 = require("./engines/selective-testing.js");
+const html_framework_plugin_js_1 = require("./engines/html-framework-plugin.js");
 __exportStar(require("./engines/project-scanner.js"), exports);
 __exportStar(require("./engines/repository-analyzer.js"), exports);
 __exportStar(require("./onboarding/index.js"), exports);
@@ -88,6 +89,7 @@ exports.pluginRegistry = new PluginRegistry();
 exports.pluginRegistry.registerFramework(new framework_react_1.ReactFrameworkPlugin());
 exports.pluginRegistry.registerFramework(new framework_next_1.NextFrameworkPlugin());
 exports.pluginRegistry.registerFramework(new framework_vue_1.VueFrameworkPlugin());
+exports.pluginRegistry.registerFramework(new html_framework_plugin_js_1.HtmlFrameworkPlugin());
 exports.pluginRegistry.registerProvider(new provider_playwright_1.PlaywrightProvider());
 exports.pluginRegistry.registerProvider(new provider_percy_1.PercyProvider());
 // ==========================================
