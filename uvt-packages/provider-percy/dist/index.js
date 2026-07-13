@@ -132,7 +132,7 @@ class PercyProvider {
     checkPercyAgent() {
         return new Promise((resolve) => {
             const req = http.request({
-                host: 'localhost',
+                host: '127.0.0.1',
                 port: 5338,
                 path: '/percy/healthcheck',
                 method: 'GET',
