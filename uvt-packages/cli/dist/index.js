@@ -418,28 +418,101 @@ jobs:
 // ==========================================
 exports.program
     .command('init')
-    .description('Initialize Universal Visual Testing configuration')
+    .description('Initialize Universal Visual Testing configuration (URAE v1)')
     .action(async () => {
     const cwd = process.cwd();
-    const configPath = path.join(cwd, 'uvt.config.ts');
-    shared_1.logger.step('INIT', 'Initializing UVT workspace...');
-    // 1. Detect framework details
+    shared_1.logger.step('INIT', 'Initializing UVT workspace with Universal Repository Automation Engine...');
+    // ─── Phase 1+2: Build Capability Graph ─────────────────────────────────
+    let graph;
     try {
-        const engine = new core_1.CoreEngine(cwd);
-        await engine.initialize();
-        const details = await engine.getFrameworkDetails();
-        shared_1.logger.success(`Framework detected: "${details.name}" with confidence: ${details.confidence}`);
+        const { buildCapabilityGraph } = await import('@uvt/core');
+        graph = await buildCapabilityGraph(cwd);
+        shared_1.logger.success(`Framework detected: "${graph.framework.name}" (${graph.projectType.type}) via Capability Graph Engine`);
+        shared_1.logger.info(`Package manager: ${graph.packageManager.name} | Server model: ${graph.devServer.serverModel}`);
     }
-    catch {
-        shared_1.logger.warn('Could not auto-detect framework structure during init.');
+    catch (e) {
+        shared_1.logger.warn(`Capability Graph Engine failed (${e.message}). Falling back to legacy detection.`);
+        // Graceful fallback: build a minimal graph from legacy detectors
+        const pm = detectPackageManager(cwd);
+        const fw = detectFramework(cwd);
+        graph = {
+            framework: { name: fw, confidence: 0.8, pluginName: fw.toLowerCase() },
+            projectType: { type: fw === 'Static HTML' ? 'Static' : 'SPA' },
+            routing: { model: 'none', library: 'None' },
+            build: { tool: 'Vite', configFile: 'vite.config.ts', outputDir: 'dist' },
+            workspace: { type: 'Single Package', lockfile: '', lockfileGlob: '**/package-lock.json', isMonorepo: false },
+            packageManager: {
+                name: pm,
+                installCmd: pm === 'pnpm' ? 'pnpm install' : pm === 'yarn' ? 'yarn install' : 'npm ci',
+                addDevCmd: pm === 'pnpm' ? 'pnpm add -D' : pm === 'yarn' ? 'yarn add -D' : 'npm install --save-dev',
+                runCmd: pm === 'pnpm' ? 'pnpm exec' : pm === 'yarn' ? 'yarn' : 'npx'
+            },
+            devServer: {
+                serverModel: 'dev-server',
+                startCommand: 'npx vite preview --port 3000 --strictPort &',
+                healthCheckUrl: 'http://localhost:3000',
+                port: 3000
+            },
+            provider: { name: 'percy', configured: !!process.env.PERCY_TOKEN, cliPackage: '@percy/cli', sdkPackage: '@percy/playwright' },
+            ci: { platform: 'github', workflowExists: false, workflowPath: path.join(cwd, '.github', 'workflows', 'uvt.yml') }
+        };
     }
-    // 2. Install Playwright and Percy dependencies
+    // ─── Phase 3: Generate ExecutionPlan ───────────────────────────────────
+    let plan;
+    try {
+        const { GeneratorPlanner } = await import('@uvt/core');
+        plan = GeneratorPlanner.plan(graph);
+    }
+    catch (e) {
+        shared_1.logger.warn(`Generator Planner unavailable (${e.message}). Generating fallback config.`);
+        plan = null;
+    }
+    // ─── Phase 3+4: Write + Validate artifacts ─────────────────────────────
+    if (plan && graph) {
+        try {
+            const { ArtifactWriter } = await import('@uvt/core');
+            const writeResults = await ArtifactWriter.write(cwd, plan, graph);
+            const failed = writeResults.filter(r => r.errors.length > 0);
+            if (failed.length > 0) {
+                failed.forEach(r => shared_1.logger.warn(`Artifact issue: ${path.basename(r.path)} — ${r.errors.join('; ')}`));
+            }
+            shared_1.logger.success(`URAE pipeline complete: ${writeResults.filter(r => r.written).length} artifacts generated and validated.`);
+        }
+        catch (e) {
+            shared_1.logger.warn(`ArtifactWriter failed (${e.message}). Using legacy generation.`);
+            plan = null;
+        }
+    }
+    // ─── Legacy fallback path (if URAE pipeline failed) ────────────────────
+    if (!plan) {
+        const configPath = path.join(cwd, 'uvt.config.ts');
+        if (!fs.existsSync(configPath)) {
+            const configTemplate = `// Universal Visual Testing (UVT) Configuration File
+export default {
+  provider: 'percy',
+  framework: 'auto',
+  cache: true,
+  workers: 'auto',
+  report: { html: true, json: true },
+  dynamicDetection: true
+};\n`;
+            fs.writeFileSync(configPath, configTemplate, 'utf-8');
+            shared_1.logger.success('Created configuration file: uvt.config.ts');
+        }
+        const githubWorkflowDir = path.join(cwd, '.github', 'workflows');
+        const githubWorkflowPath = path.join(githubWorkflowDir, 'uvt.yml');
+        fs.mkdirSync(githubWorkflowDir, { recursive: true });
+        const actionYaml = generateGHAWorkflow(cwd);
+        fs.writeFileSync(githubWorkflowPath, actionYaml, 'utf-8');
+        shared_1.logger.success('Scaffolded GitHub Action workflow at .github/workflows/uvt.yml');
+    }
+    // ─── Always: Install dependencies + Playwright browsers ────────────────
     const packageJsonPath = path.join(cwd, 'package.json');
     if (fs.existsSync(packageJsonPath)) {
         try {
             const pkg = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
             const deps = { ...(pkg.dependencies || {}), ...(pkg.devDependencies || {}) };
-            const packageManager = detectPackageManager(cwd);
+            const packageManager = graph?.packageManager?.name || detectPackageManager(cwd);
             const toInstall = [];
             if (!deps['playwright'])
                 toInstall.push('playwright');
@@ -448,112 +521,35 @@ exports.program
             if (!deps['@percy/cli'])
                 toInstall.push('@percy/cli');
             if (toInstall.length > 0) {
-                shared_1.logger.info(`Installing missing dependencies (${toInstall.join(', ')}) using ${packageManager}...`);
-                let installCmd = '';
-                if (packageManager === 'pnpm')
-                    installCmd = `pnpm add -D ${toInstall.join(' ')}`;
-                else if (packageManager === 'yarn')
-                    installCmd = `yarn add -D ${toInstall.join(' ')}`;
-                else
-                    installCmd = `npm install --save-dev ${toInstall.join(' ')}`;
+                shared_1.logger.info(`Installing missing dependencies: ${toInstall.join(', ')} (${packageManager})...`);
+                const addCmd = graph?.packageManager?.addDevCmd || 'npm install --save-dev';
                 try {
-                    (0, child_process_1.execSync)(installCmd, { stdio: 'inherit', cwd });
+                    (0, child_process_1.execSync)(`${addCmd} ${toInstall.join(' ')}`, { stdio: 'inherit', cwd });
+                    shared_1.logger.success('Dependencies installed successfully.');
                 }
                 catch (err) {
-                    if (packageManager === 'pnpm') {
-                        shared_1.logger.info('pnpm install failed, attempting fallback via npx pnpm...');
-                        (0, child_process_1.execSync)(`npx pnpm add -D ${toInstall.join(' ')}`, { stdio: 'inherit', cwd });
-                    }
-                    else {
-                        throw err;
-                    }
+                    shared_1.logger.warn(`Dependency install failed: ${err.message}. Please install manually.`);
                 }
-                shared_1.logger.success('Installed dependencies successfully.');
             }
             else {
                 shared_1.logger.success('All required dependencies are already present.');
             }
         }
         catch (e) {
-            shared_1.logger.warn(`Failed to install dependencies: ${e.message}`);
+            shared_1.logger.warn(`Could not check package.json dependencies: ${e.message}`);
         }
     }
-    // 3. Download Playwright browser binaries
     try {
         shared_1.logger.info('Downloading Playwright browsers...');
-        (0, child_process_1.execSync)('npx playwright install', { stdio: 'inherit', cwd });
+        (0, child_process_1.execSync)('npx playwright install chromium --with-deps', { stdio: 'inherit', cwd });
         shared_1.logger.success('Playwright browsers installed successfully.');
     }
     catch (e) {
         shared_1.logger.warn(`Failed to install Playwright browsers: ${e.message}`);
     }
-    // 4. Create config file
-    if (fs.existsSync(configPath)) {
-        shared_1.logger.warn('Configuration file uvt.config.ts already exists.');
-    }
-    else {
-        const configTemplate = `// Universal Visual Testing (UVT) Configuration File
-export default {
-  // Visual comparison service provider ("percy" or "playwright")
-  provider: 'playwright',
-  
-  // Framework integration type ("auto", "react", "next", "vue", "angular", "svelte")
-  framework: 'auto',
-  
-  // Enable cache for incremental testing
-  cache: true,
-  
-  // Workers number ("auto" or custom number)
-  workers: 'auto',
-  
-  // Reports options
-  report: {
-    html: true,
-    json: true
-  },
-  
-  // Mask dynamic elements (dates, uuids, times)
-  dynamicDetection: true
-};
-`;
-        fs.writeFileSync(configPath, configTemplate, 'utf-8');
-        shared_1.logger.success(`Created configuration file: uvt.config.ts`);
-    }
-    // 5. Scaffold GitHub Action workflow
-    const githubWorkflowDir = path.join(cwd, '.github', 'workflows');
-    const githubWorkflowPath = path.join(githubWorkflowDir, 'uvt.yml');
-    fs.mkdirSync(githubWorkflowDir, { recursive: true });
-    const actionYaml = generateGHAWorkflow(cwd);
-    fs.writeFileSync(githubWorkflowPath, actionYaml, 'utf-8');
-    shared_1.logger.success('Scaffolded GitHub Action workflow at .github/workflows/uvt.yml');
-    // 6. Create ignore files
-    const gitignorePath = path.join(cwd, '.gitignore');
-    let gitignoreContent = '';
-    if (fs.existsSync(gitignorePath)) {
-        gitignoreContent = fs.readFileSync(gitignorePath, 'utf-8');
-    }
-    const linesToAdd = [
-        '/node_modules/',
-        '/dist/',
-        '/.next/',
-        '/.nuxt/',
-        '/.uvt/',
-        '/tests/generated/'
-    ];
-    let modified = false;
-    linesToAdd.forEach(line => {
-        if (!gitignoreContent.includes(line)) {
-            gitignoreContent += `\n${line}`;
-            modified = true;
-        }
-    });
-    if (modified) {
-        fs.writeFileSync(gitignorePath, gitignoreContent.trim() + '\n', 'utf-8');
-        shared_1.logger.success('Updated .gitignore ignore list.');
-    }
     fs.mkdirSync(path.join(cwd, '.uvt', 'cache'), { recursive: true });
-    shared_1.logger.success(`Created directory: .uvt/`);
-    shared_1.logger.info('Initialization complete. Run "uvt test" or "uvt doctor" to proceed.');
+    shared_1.logger.success('Created .uvt/ directory structure.');
+    shared_1.logger.info('Initialization complete. Run "uvt doctor" to verify or "uvt test" to begin testing.');
 });
 // ==========================================
 // Command: doctor
@@ -1304,6 +1300,59 @@ certifyCmd.command('matrix')
     }
     catch (e) {
         shared_1.logger.error(`CCRCS matrix run failed: ${e.message}`);
+    }
+});
+certifyCmd.command('matrix')
+    .description('Run URAE Framework Certification Matrix across all demo repositories (RC-04)')
+    .option('--path <path>', 'Base path containing demo repositories', process.cwd())
+    .action(async (options) => {
+    try {
+        const { CertificationRunner } = await import('@uvt/compatibility');
+        const basePath = path.resolve(options.path);
+        const targets = [
+            {
+                name: 'React Demo',
+                path: path.join(basePath, 'examples', 'react-demo'),
+                expectedFramework: 'react',
+                expectedProjectType: 'SPA',
+                expectedRouteCount: 1
+            },
+            {
+                name: 'Next.js Demo',
+                path: path.join(basePath, 'examples', 'next-demo'),
+                expectedFramework: 'next',
+                expectedProjectType: 'Hybrid',
+                expectedRouteCount: 1
+            },
+            {
+                name: 'HTML Demo',
+                path: path.join(basePath, 'examples', 'html-demo'),
+                expectedFramework: 'Static HTML',
+                expectedProjectType: 'Static',
+                expectedRouteCount: 1
+            },
+            {
+                name: 'Vue Demo',
+                path: path.join(basePath, 'examples', 'vue-demo'),
+                expectedFramework: 'vue',
+                expectedProjectType: 'SPA',
+                expectedRouteCount: 1
+            }
+        ];
+        shared_1.logger.step('CERTIFY MATRIX', `Running RC-04 URAE Framework Certification on ${targets.length} frameworks...`);
+        const reports = await CertificationRunner.run(targets);
+        CertificationRunner.printMatrix(reports);
+        const allPassed = reports.every(r => r.passed);
+        if (!allPassed) {
+            shared_1.logger.error('Framework Certification Matrix: FAILED. See above for details.');
+            process.exitCode = 1;
+        }
+        else {
+            shared_1.logger.success('Framework Certification Matrix: ALL FRAMEWORKS CERTIFIED ✔');
+        }
+    }
+    catch (e) {
+        shared_1.logger.error(`URAE Certification Matrix failed: ${e.message}`);
     }
 });
 certifyCmd.command('trend')

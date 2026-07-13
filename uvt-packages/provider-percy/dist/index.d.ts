@@ -4,6 +4,10 @@ export declare class PercyProvider implements VisualProvider {
     readonly apiVersion: 1;
     private percyRunning;
     private autoStarted;
+    prepare(options: {
+        cwd: string;
+        config: any;
+    }): Promise<void>;
     initialize(options: {
         cwd: string;
         config: any;

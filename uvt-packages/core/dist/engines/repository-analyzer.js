@@ -1,10 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.CapabilityGraphBuilder = void 0;
 exports.createRepoContext = createRepoContext;
+exports.buildCapabilityGraph = buildCapabilityGraph;
 exports.resolveFramework = resolveFramework;
 exports.resolveFrameworkAsync = resolveFrameworkAsync;
 const shared_1 = require("@uvt/shared");
 const index_js_1 = require("../repository-intelligence/index.js");
+const capability_graph_js_1 = require("../capability-graph/capability-graph.js");
+Object.defineProperty(exports, "CapabilityGraphBuilder", { enumerable: true, get: function () { return capability_graph_js_1.CapabilityGraphBuilder; } });
 async function createRepoContext(cwd) {
     const rieContext = await index_js_1.DependencyParser.createContext(cwd);
     return {
@@ -13,6 +17,16 @@ async function createRepoContext(cwd) {
         dependencies: rieContext.dependencies,
         files: rieContext.files
     };
+}
+/**
+ * Build a fully typed CapabilityGraph from an RIE scan.
+ * This is the primary entry point for the URAE Generator Planner and
+ * Artifact Validation Engine.
+ */
+async function buildCapabilityGraph(cwd) {
+    const engine = new index_js_1.RepositoryIntelligenceEngine(cwd);
+    const scan = await engine.scan(cwd, true);
+    return capability_graph_js_1.CapabilityGraphBuilder.build(scan, cwd);
 }
 function resolveFramework(repo, plugins) {
     // Sync wrapper remains for older API calls.

@@ -14,8 +14,12 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.CertificationRunner = void 0;
 __exportStar(require("./metrics/models.js"), exports);
 __exportStar(require("./matrix/matrix.js"), exports);
 __exportStar(require("./runner/runner.js"), exports);
 __exportStar(require("./regressions/regression-engine.js"), exports);
+// RC-04 URAE — Framework & Generator Certification Suite
+var certification_runner_js_1 = require("./certification-runner.js");
+Object.defineProperty(exports, "CertificationRunner", { enumerable: true, get: function () { return certification_runner_js_1.CertificationRunner; } });
 //# sourceMappingURL=index.js.map

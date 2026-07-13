@@ -18,6 +18,8 @@ export interface RIEDetector {
     readonly name: string;
     detect(context: RIEContext): Promise<void>;
 }
+export type ProjectType = 'SPA' | 'SSR' | 'SSG' | 'MPA' | 'Hybrid' | 'Static';
+export type ServerModel = 'dev-server' | 'static' | 'SSR' | 'Node';
 export interface RepositoryScanResult {
     metadata: {
         framework: string;
@@ -35,6 +37,11 @@ export interface RepositoryScanResult {
         testing: string;
         cms: string;
         animation: string;
+        projectType: ProjectType;
+        serverModel: ServerModel;
+        devServerCommand: string;
+        outputDir: string;
+        lockfileGlob: string;
     };
     graph: CapabilityGraphNode[];
     signals: any[];

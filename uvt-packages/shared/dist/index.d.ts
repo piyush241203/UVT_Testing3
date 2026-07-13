@@ -43,6 +43,15 @@ export interface FrameworkPlugin {
 export interface VisualProvider {
     readonly name: string;
     readonly apiVersion: 1;
+    /**
+     * Optional: Phase 5 URAE lifecycle hook.
+     * Called before initialize() — validates authentication,
+     * configures network settings, and pre-flights provider requirements.
+     */
+    prepare?(options: {
+        cwd: string;
+        config: any;
+    }): Promise<void>;
     initialize(options: {
         cwd: string;
         config: any;
@@ -53,6 +62,11 @@ export interface VisualProvider {
         url: string;
         route?: RouteDescriptor;
     }): Promise<any>;
+    /**
+     * Optional: Phase 5 URAE lifecycle hook.
+     * Provider-managed full execution (replaces external percy exec wrapper).
+     */
+    run?(routes: RouteDescriptor[]): Promise<any>;
     upload?(handles: any[]): Promise<any>;
     compare?(baseline: string, current: string): Promise<any>;
     finalize(): Promise<void>;

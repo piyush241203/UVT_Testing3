@@ -18,6 +18,8 @@ const detector_js_12 = require("../analytics/detector.js");
 const detector_js_13 = require("../payments/detector.js");
 const detector_js_14 = require("../testing/detector.js");
 const detector_js_15 = require("../cms/detector.js");
+const detector_js_16 = require("../project-type/detector.js");
+const detector_js_17 = require("../server-model/detector.js");
 const index_js_1 = require("../../dynamic-engine/index.js");
 class RepositoryIntelligenceEngine {
     cache;
@@ -39,7 +41,10 @@ class RepositoryIntelligenceEngine {
             new detector_js_12.AnalyticsDetector(),
             new detector_js_13.PaymentsDetector(),
             new detector_js_14.TestingDetector(),
-            new detector_js_15.CMSDetector()
+            new detector_js_15.CMSDetector(),
+            // RIE v2 — URAE detectors
+            new detector_js_16.ProjectTypeDetector(),
+            new detector_js_17.ServerModelDetector()
         ];
     }
     async scan(cwd, force = false) {
@@ -67,7 +72,13 @@ class RepositoryIntelligenceEngine {
             payments: context.capabilities.get('payments')?.name || 'None',
             testing: context.capabilities.get('testing')?.name || 'None',
             cms: context.capabilities.get('cms')?.name || 'None',
-            animation: context.capabilities.get('animation')?.name || 'None'
+            animation: context.capabilities.get('animation')?.name || 'None',
+            // RIE v2 — URAE additions
+            projectType: (context.capabilities.get('projectType')?.name || 'Static'),
+            serverModel: (context.capabilities.get('serverModel')?.name || 'static'),
+            devServerCommand: context.capabilities.get('devServerCommand')?.name || 'npx vite --port 3000 --strictPort &',
+            outputDir: context.capabilities.get('outputDir')?.name || 'dist',
+            lockfileGlob: context.capabilities.get('lockfileGlob')?.name || '**/package-lock.json'
         };
         const signals = [];
         // Map frameworks to signals

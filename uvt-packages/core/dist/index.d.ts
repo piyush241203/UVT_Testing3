@@ -6,6 +6,12 @@ export * from './onboarding/index.js';
 export * from './build-management/index.js';
 export * from './cloud-sync/index.js';
 export * from './dynamic-engine/index.js';
+export { CapabilityGraph, CapabilityGraphBuilder, CapabilityGraphBuilder as CGE } from './capability-graph/capability-graph.js';
+export { buildCapabilityGraph } from './engines/repository-analyzer.js';
+export { GeneratorPlanner, ExecutionPlan } from './generator/generator-planner.js';
+export { ArtifactWriter } from './generator/artifact-writer.js';
+export { ArtifactValidator, ValidationResult, ValidationError } from './validation/artifact-validator.js';
+export { SelfHealingGenerator, HealingReport } from './validation/self-healing-generator.js';
 export declare class PluginRegistry {
     private frameworks;
     private providers;

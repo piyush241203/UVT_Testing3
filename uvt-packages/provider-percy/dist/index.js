@@ -45,6 +45,18 @@ class PercyProvider {
     apiVersion = 1;
     percyRunning = false;
     autoStarted = false;
+    async prepare(options) {
+        shared_1.logger.debug('Percy Provider pre-flight check...');
+        if (process.env.PERCY_TOKEN) {
+            const token = process.env.PERCY_TOKEN;
+            const masked = `${token.slice(0, 4)}****${token.slice(-4)}`;
+            shared_1.logger.info(`Percy Provider: PERCY_TOKEN present (${masked}). Provider is configured.`);
+        }
+        else {
+            shared_1.logger.warn('Percy Provider: PERCY_TOKEN not set. Snapshots will be captured locally only (standalone mode).');
+            shared_1.logger.warn('To enable Percy uploads: set PERCY_TOKEN in your environment or CI secrets.');
+        }
+    }
     async initialize(options) {
         shared_1.logger.debug('Percy Provider initializing...');
         if (options.isSelective) {
