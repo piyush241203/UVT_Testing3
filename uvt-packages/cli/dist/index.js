@@ -345,19 +345,6 @@ jobs:
         env:
           PERCY_TOKEN: \${{ secrets.PERCY_TOKEN }}
 \${{ensureCliCmd}}
-      - name: Validate Percy Authentication (Independent Test)
-        run: |
-          if [ -n "\${{ secrets.PERCY_TOKEN }}" ]; then
-            echo "Running minimal independent Percy authentication test..."
-            npx percy exec -- echo "Percy Authenticated Independently" || {
-              echo "Percy independent authentication failed! This proves it's not a UVT issue."
-              exit 1
-            }
-          else
-            echo "No PERCY_TOKEN provided, skipping auth check."
-          fi
-        env:
-          PERCY_TOKEN: \${{ secrets.PERCY_TOKEN }}
 
       - name: Cache Playwright Browsers
         id: playwright-cache
