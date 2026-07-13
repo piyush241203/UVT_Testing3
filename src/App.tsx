@@ -266,8 +266,8 @@ function Layout({ children }: { children: React.ReactNode }) {
 function Home() {
   return (
     <div>
-      <h3 style={{ color: '#e05d44' }}>✨ Home Page — Live Pipeline RC-03.2</h3>
-      <p>Welcome to UVT React Demo v2 — RC-03 selective validation in progress.</p>
+      <h3 style={{ color: '#e05d44' }}>✨ Home Page</h3>
+      <p>Welcome to UVT React Demo v2</p>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px', marginTop: '16px' }}>
         <div style={{ padding: '16px', border: '1px solid #eee', borderRadius: '8px' }}>
           <h4 style={{ marginTop: 0 }}>Live Clock</h4>
