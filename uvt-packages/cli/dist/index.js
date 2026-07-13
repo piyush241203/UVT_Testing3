@@ -391,9 +391,13 @@ jobs:
           done
 
       - name: Run visual regression tests
-        run: npx percy exec -- \${{runCliCmd}} test --changed --port 3000
+        run: \${{runCliCmd}} test --changed --port 3000
         env:
           PERCY_TOKEN: \${{ secrets.PERCY_TOKEN }}
+          
+      - name: Teardown background processes
+        if: always()
+        run: pkill -f "\${{devCommand}}" || true
 `
         .replace(/\$\{\{setupPnpm\}\}/g, setupPnpm)
         .replace(/\$\{\{setupBun\}\}/g, setupBun)
@@ -405,8 +409,9 @@ jobs:
         .replace(/\$\{\{isWorkspace \? 'Workspace' : 'Published Package'\}\}/g, isWorkspace ? 'Workspace' : 'Published Package')
         .replace(/\$\{\{ensureCliCmd\}\}/g, ensureCliCmd)
         .replace(/\$\{\{lockfileGlob\}\}/g, lockfileGlob)
+        .replace(/\$\{\{runCliCmd\}\}/g, runCliCmd)
         .replace(/\$\{\{startDevCmd\}\}/g, startDevCmd)
-        .replace(/\$\{\{runCliCmd\}\}/g, runCliCmd);
+        .replace(/\$\{\{devCommand\}\}/g, detectedFramework === 'Static HTML' || detectedFramework === 'Vue' || detectedFramework === 'React' ? 'vite' : 'node');
 }
 // ==========================================
 // Command: init
@@ -528,12 +533,12 @@ export default {
         gitignoreContent = fs.readFileSync(gitignorePath, 'utf-8');
     }
     const linesToAdd = [
-        'node_modules/',
-        'dist/',
-        '.next/',
-        '.nuxt/',
-        '.uvt/',
-        'tests/generated/'
+        '/node_modules/',
+        '/dist/',
+        '/.next/',
+        '/.nuxt/',
+        '/.uvt/',
+        '/tests/generated/'
     ];
     let modified = false;
     linesToAdd.forEach(line => {

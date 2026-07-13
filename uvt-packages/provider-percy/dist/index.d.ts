@@ -3,6 +3,7 @@ export declare class PercyProvider implements VisualProvider {
     name: string;
     readonly apiVersion: 1;
     private percyRunning;
+    private autoStarted;
     initialize(options: {
         cwd: string;
         config: any;
@@ -14,6 +15,7 @@ export declare class PercyProvider implements VisualProvider {
         route?: any;
     }): Promise<void>;
     finalize(): Promise<void>;
+    private startPercyAgent;
     private checkPercyAgent;
 }
 //# sourceMappingURL=index.d.ts.map

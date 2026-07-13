@@ -44,6 +44,7 @@ class PercyProvider {
     name = 'percy';
     apiVersion = 1;
     percyRunning = false;
+    autoStarted = false;
     async initialize(options) {
         shared_1.logger.debug('Percy Provider initializing...');
         if (options.isSelective) {
@@ -54,9 +55,21 @@ class PercyProvider {
         if (this.percyRunning) {
             shared_1.logger.success('Percy agent detected and connected successfully.');
         }
+        else if (process.env.PERCY_TOKEN) {
+            shared_1.logger.info('Percy agent not detected. Starting Percy CLI server in background...');
+            const started = await this.startPercyAgent();
+            if (started) {
+                shared_1.logger.success('Percy CLI server started and connected successfully in background.');
+                this.percyRunning = true;
+                this.autoStarted = true;
+            }
+            else {
+                shared_1.logger.warn('Failed to start background Percy server. UVT will run in standalone mode.');
+            }
+        }
         else {
-            shared_1.logger.warn('Percy agent not detected. UVT is running in standalone mode.');
-            shared_1.logger.warn('To upload to Percy, wrap your test command: `npx percy exec -- npx uvt test`');
+            shared_1.logger.warn('Percy agent not detected and PERCY_TOKEN not set. UVT is running in standalone mode.');
+            shared_1.logger.warn('To upload to Percy, either set PERCY_TOKEN or wrap your test command: `npx percy exec -- npx uvt test`');
         }
     }
     async snapshot(page, opts) {
@@ -83,7 +96,38 @@ class PercyProvider {
     async finalize() {
         if (this.percyRunning) {
             shared_1.logger.success('All snapshots sent to Percy successfully.');
+            if (this.autoStarted) {
+                shared_1.logger.info('Stopping background Percy CLI server...');
+                try {
+                    require('child_process').execSync('npx percy exec:stop', { stdio: 'inherit' });
+                }
+                catch (e) {
+                    shared_1.logger.error('Failed to stop background Percy server.');
+                }
+            }
         }
+    }
+    startPercyAgent() {
+        return new Promise((resolve) => {
+            const child = require('child_process').spawn('npx', ['percy', 'exec:start'], {
+                detached: true,
+                stdio: 'ignore',
+                env: process.env
+            });
+            child.unref();
+            let attempts = 0;
+            const interval = setInterval(async () => {
+                attempts++;
+                if (await this.checkPercyAgent()) {
+                    clearInterval(interval);
+                    resolve(true);
+                }
+                else if (attempts > 20) {
+                    clearInterval(interval);
+                    resolve(false);
+                }
+            }, 500);
+        });
     }
     checkPercyAgent() {
         return new Promise((resolve) => {
