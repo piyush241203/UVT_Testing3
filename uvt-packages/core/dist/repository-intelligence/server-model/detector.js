@@ -110,7 +110,11 @@ class ServerModelDetector {
             evidence.push('No framework detected: static HTML server with http-server.');
         }
         // Override with scripts if the project has explicit build/serve scripts
-        if (pkg?.scripts?.serve) {
+        if (pkg?.scripts?.dev) {
+            devServerCommand = `npm run dev &`;
+            evidence.push('Found explicit "dev" script in package.json.');
+        }
+        else if (pkg?.scripts?.serve) {
             devServerCommand = `npm run serve &`;
             evidence.push('Found explicit "serve" script in package.json.');
         }

@@ -1302,7 +1302,7 @@ certifyCmd.command('matrix')
         shared_1.logger.error(`CCRCS matrix run failed: ${e.message}`);
     }
 });
-certifyCmd.command('matrix')
+certifyCmd.command('demo-matrix')
     .description('Run URAE Framework Certification Matrix across all demo repositories (RC-04)')
     .option('--path <path>', 'Base path containing demo repositories', process.cwd())
     .action(async (options) => {

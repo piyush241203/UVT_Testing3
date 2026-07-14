@@ -111,7 +111,9 @@ class PercyProvider {
             if (this.autoStarted) {
                 shared_1.logger.info('Stopping background Percy CLI server...');
                 try {
-                    require('child_process').execSync('npx percy exec:stop', { stdio: 'inherit' });
+                    const isWin = process.platform === 'win32';
+                    const cmd = isWin ? 'npx.cmd' : 'npx';
+                    require('child_process').execSync(`${cmd} percy exec:stop`, { stdio: 'ignore' });
                 }
                 catch (e) {
                     shared_1.logger.error('Failed to stop background Percy server.');
@@ -121,8 +123,10 @@ class PercyProvider {
     }
     startPercyAgent() {
         return new Promise((resolve) => {
-            const child = require('child_process').spawn('npx', ['percy', 'exec:start'], {
-                detached: true,
+            const isWin = process.platform === 'win32';
+            const cmd = isWin ? 'npx.cmd' : 'npx';
+            const child = require('child_process').spawn(cmd, ['--yes', 'percy', 'exec:start'], {
+                detached: !isWin, // Detached mode on Windows for npx can cause it to hang or fail
                 stdio: 'ignore',
                 env: process.env
             });
