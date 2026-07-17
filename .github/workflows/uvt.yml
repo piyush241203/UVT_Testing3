@@ -103,8 +103,17 @@ jobs:
         run: npx uvt test --changed --port 3000
         env:
           PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+
+      - name: Print Percy logs
+        if: always()
+        run: |
+          if [ -f .uvt/percy.log ]; then
+            echo "=== Percy CLI Logs ==="
+            cat .uvt/percy.log
+          else
+            echo "No Percy CLI logs found."
+          fi
           
       - name: Teardown background processes
         if: always()
         run: pkill -f "vite" || pkill -f "node" || true
-
