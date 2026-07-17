@@ -91,16 +91,16 @@ jobs:
         run: npm run build --if-present
 
       - name: Start dev server in background
-        run: npx vite --host 127.0.0.1 --port 5173 --strictPort &
+        run: npx vite --port 3000 --strictPort &
 
       - name: Wait for local server
         run: |
           for i in {1..60}; do
-            curl -s http://127.0.0.1:5173 && break || sleep 2
+            curl -s http://localhost:3000 && break || sleep 2
           done
 
       - name: Run visual regression tests
-        run: npx uvt test --changed --host 127.0.0.1 --port 5173
+        run: npx uvt test --changed --port 3000
         env:
           PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
           
