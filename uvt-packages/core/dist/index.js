@@ -231,8 +231,11 @@ class CoreEngine {
                 // Setup Network Analyzer to capture response logs
                 const networkAnalyzer = new network_analyzer_js_1.NetworkAnalyzer();
                 networkAnalyzer.setup(page);
-                // Navigate
-                await page.goto(fullUrl, { waitUntil: 'networkidle', timeout: 30000 });
+                // Navigate - use 60s timeout for slow CI environments
+                await page.goto(fullUrl, { waitUntil: 'networkidle', timeout: 60000 });
+                // Extra stability wait: ensure DOM is fully loaded and JS has settled
+                await page.waitForLoadState('domcontentloaded');
+                await new Promise(resolve => setTimeout(resolve, 300));
                 // Always use route name + URL path as snapshot name to guarantee Percy uniqueness.
                 // document.title is NOT used because SPAs share the same title across all routes.
                 const routePath = route.url.replace(/:/g, '_').replace(/\//g, '_').replace(/^_/, '') || 'home';

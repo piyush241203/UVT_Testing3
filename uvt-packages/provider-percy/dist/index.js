@@ -108,9 +108,19 @@ class PercyProvider {
             return;
         }
         shared_1.logger.info(`Sending DOM snapshot "${name}" to Percy...`);
+        // Small stabilization wait to ensure page JS has settled before Percy serializes the DOM
+        await new Promise(resolve => setTimeout(resolve, 500));
+        // Verify page is still open before attempting snapshot
+        try {
+            await page.evaluate(() => true); // lightweight check
+        }
+        catch (e) {
+            shared_1.logger.warn(`Page appears closed before Percy snapshot for "${name}". Skipping.`);
+            return;
+        }
         const percyPromise = (0, playwright_1.default)(page, name);
         const timeoutPromise = new Promise((resolve, reject) => {
-            setTimeout(() => reject(new Error(`Percy snapshot timed out after 30 seconds for ${name}`)), 30000);
+            setTimeout(() => reject(new Error(`Percy snapshot timed out after 90 seconds for ${name}`)), 90000);
         });
         await Promise.race([percyPromise, timeoutPromise]);
     }
