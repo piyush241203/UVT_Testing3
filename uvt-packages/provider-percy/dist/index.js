@@ -193,7 +193,19 @@ class PercyProvider {
                 method: 'GET',
                 timeout: 1000
             }, (res) => {
-                resolve(res.statusCode === 200);
+                let data = '';
+                res.on('data', (chunk) => {
+                    data += chunk;
+                });
+                res.on('end', () => {
+                    try {
+                        const json = JSON.parse(data);
+                        resolve(res.statusCode === 200 && json.success === true);
+                    }
+                    catch (e) {
+                        resolve(false);
+                    }
+                });
             });
             req.on('error', () => {
                 resolve(false);
