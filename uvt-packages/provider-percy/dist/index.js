@@ -162,10 +162,10 @@ class PercyProvider {
             if (!fs.existsSync(uvtDir)) {
                 fs.mkdirSync(uvtDir, { recursive: true });
             }
-            const logStream = fs.createWriteStream(path.join(uvtDir, 'percy.log'), { flags: 'a' });
+            const logFd = fs.openSync(path.join(uvtDir, 'percy.log'), 'a');
             const child = require('child_process').spawn(cmd, ['--yes', 'percy', 'exec:start'], {
                 detached: !isWin,
-                stdio: ['ignore', logStream, logStream],
+                stdio: ['ignore', logFd, logFd],
                 env: process.env,
                 shell: isWin
             });
