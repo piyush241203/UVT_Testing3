@@ -225,7 +225,7 @@ function Layout({ children }: { children: React.ReactNode }) {
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <button onClick={() => setSidebarOpen(v => !v)} style={{ background: '#22c55e', color: '#fff', border: 'none', borderRadius: '8px', padding: '6px 12px', cursor: 'pointer', fontSize: '16px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>☰ Menu</button>
-          <h2 style={{ margin: 0, color: '#10b981', fontWeight: '800', letterSpacing: '-0.5px' }}>✨ UVT React Demo v3.2 (This is React.js)</h2>
+          <h2 style={{ margin: 0, color: '#10b981', fontWeight: '800', letterSpacing: '-0.5px' }}>✨ UVT React Demo — UI Round 2 🎯</h2>
         </div>
         <nav style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
           <Link to="/">Home</Link>
@@ -796,7 +796,7 @@ function Accordion() {
     <div style={{ border: '1px solid #ddd', borderRadius: '8px', marginBottom: '16px', overflow: 'hidden' }}>
       {['Overview', 'Advanced Settings', 'Danger Zone'].map((title, idx) => (
         <div key={title} style={{ borderBottom: idx === 2 ? 'none' : '1px solid #ddd' }}>
-          <div 
+          <div
             onClick={() => setOpenIdx(openIdx === idx ? null : idx)}
             style={{ padding: '16px', background: '#f8fafc', cursor: 'pointer', fontWeight: 600, display: 'flex', justifyContent: 'space-between' }}
           >
@@ -820,7 +820,7 @@ function Tabs() {
     <div style={{ marginBottom: '16px' }}>
       <div style={{ display: 'flex', borderBottom: '1px solid #ddd' }}>
         {['data', 'chart', 'logs'].map(t => (
-          <button 
+          <button
             key={t}
             onClick={() => setTab(t)}
             style={{ padding: '12px 24px', border: 'none', background: tab === t ? '#fff' : 'transparent', borderBottom: tab === t ? '2px solid #3b82f6' : 'none', cursor: 'pointer', textTransform: 'capitalize', fontWeight: tab === t ? 600 : 400 }}
