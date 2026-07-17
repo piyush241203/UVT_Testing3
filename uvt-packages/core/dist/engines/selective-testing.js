@@ -146,8 +146,7 @@ async function getAffectedRoutes(cwd, routes) {
             srcDir = rootPages;
         }
         else {
-            shared_1.logger.warn('Source directory src/, app/, or pages/ not found. Running all tests.');
-            return { affectedRoutes: routes, changedFiles };
+            srcDir = cwd; // Fallback for plain PHP and frameworks without src/
         }
     }
     let graph = {};
@@ -155,7 +154,8 @@ async function getAffectedRoutes(cwd, routes) {
         // Madge will build the dependency tree of JS/TS/JSX/TSX files
         const madgeResult = await (0, madge_1.default)(srcDir, {
             fileExtensions: ['js', 'jsx', 'ts', 'tsx'],
-            includeNpm: false
+            includeNpm: false,
+            excludeRegExp: [/node_modules/, /vendor/, /dist/, /\.git/]
         });
         // Madge returns relative paths from base dir (srcDir)
         // Map them to absolute paths for easy comparison
@@ -173,6 +173,27 @@ async function getAffectedRoutes(cwd, routes) {
     // 3. Trace dependencies recursively
     const affectedRoutes = [];
     const checkedRoutes = new Set();
+    // Collect all known files (routes and graph dependencies)
+    const knownFiles = new Set();
+    routes.forEach(r => {
+        if (r.sourceFile)
+            knownFiles.add(path.resolve(r.sourceFile));
+    });
+    Object.keys(graph).forEach(k => {
+        knownFiles.add(k);
+        graph[k].forEach(d => knownFiles.add(d));
+    });
+    // Check if there are any source files (.php, .html, .js, .css, etc) changed that are UNKNOWN
+    const unmappedChanges = changedFiles.filter(f => {
+        if (knownFiles.has(f))
+            return false;
+        const ext = path.extname(f).toLowerCase();
+        return ['.php', '.html', '.css', '.js', '.ts', '.jsx', '.tsx', '.vue', '.svelte'].includes(ext);
+    });
+    if (unmappedChanges.length > 0) {
+        shared_1.logger.info(`Detected changes in shared or unmapped source files (e.g. ${path.basename(unmappedChanges[0])}). Running all tests.`);
+        return { affectedRoutes: routes, changedFiles };
+    }
     for (const route of routes) {
         if (!route.sourceFile) {
             // If no source file mapped, run it defensively

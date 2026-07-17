@@ -167,7 +167,7 @@ snapshot:
     - 768
     - 1280
   min-height: 1024
-  enable-javascript: true
+  enable-javascript: false
 discovery:
   network-idle-timeout: ${idleTimeout}
   # Framework: ${graph.framework.name} | Project: ${graph.projectType.type}

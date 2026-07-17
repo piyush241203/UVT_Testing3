@@ -179,6 +179,8 @@ class LegacyMaskingStabilizer {
                     '[id*="token" i]', '[class*="token" i]',
                     '[id*="uuid" i]', '[class*="uuid" i]',
                     '[data-uvt-dynamic]', '[data-uvt-dynamic] *',
+                    '[class*="dynamic" i]', '[id*="dynamic" i]',
+                    '[class*="random" i]', '[id*="random" i]',
                     'canvas', 'img[src*="avatar" i]', 'img[src*="pravatar" i]',
                     '[class*="avatar" i]', '[id*="avatar" i]'
                 ];

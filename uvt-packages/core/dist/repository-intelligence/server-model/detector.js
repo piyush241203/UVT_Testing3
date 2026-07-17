@@ -51,8 +51,25 @@ class ServerModelDetector {
         let outputDir = 'dist';
         let lockfileGlob = '**/package-lock.json';
         const evidence = [];
+        let hasPhp = false;
+        try {
+            hasPhp = fs.existsSync(cwd) && fs.readdirSync(cwd).some(f => f.endsWith('.php'));
+        }
+        catch { }
         // --- Server Model ---
-        if (deps['next']) {
+        if (deps['laravel/framework']) {
+            serverModel = 'SSR';
+            devServerCommand = 'php artisan serve --port 8000 &';
+            outputDir = '.';
+            evidence.push('Laravel: PHP artisan server, starts with `php artisan serve`.');
+        }
+        else if (deps['php'] || fs.existsSync(path.join(cwd, 'composer.json')) || hasPhp) {
+            serverModel = 'SSR';
+            devServerCommand = 'php -S 0.0.0.0:8000 &';
+            outputDir = '.';
+            evidence.push('PHP: PHP built-in server, starts with `php -S`.');
+        }
+        else if (deps['next']) {
             serverModel = 'SSR';
             // Next.js serves from .next after `next build && next start`
             devServerCommand = 'npx next start -p 3000 &';

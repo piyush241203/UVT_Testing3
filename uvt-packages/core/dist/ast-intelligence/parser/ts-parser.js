@@ -38,11 +38,22 @@ const ts = __importStar(require("typescript"));
 class TSParser {
     parse(filePath, content) {
         const extension = filePath.split('.').pop()?.toLowerCase() || 'js';
+        // Extract script blocks for .svelte and .vue to avoid TS syntax errors on HTML
+        let parseContent = content;
+        if (extension === 'svelte' || extension === 'vue') {
+            const scriptMatch = content.match(/<script[^>]*>([\s\S]*?)<\/script>/i);
+            if (scriptMatch && scriptMatch[1]) {
+                parseContent = scriptMatch[1];
+            }
+            else {
+                parseContent = ''; // No script to parse
+            }
+        }
         const scriptKind = extension === 'tsx' || extension === 'jsx' ? ts.ScriptKind.TSX
-            : extension === 'ts' ? ts.ScriptKind.TS
+            : (extension === 'ts' || extension === 'svelte' || extension === 'vue') ? ts.ScriptKind.TS
                 : extension === 'js' ? ts.ScriptKind.JS
                     : ts.ScriptKind.Unknown;
-        return ts.createSourceFile(filePath, content, ts.ScriptTarget.Latest, true, // setParentNodes
+        return ts.createSourceFile(filePath, parseContent, ts.ScriptTarget.Latest, true, // setParentNodes
         scriptKind);
     }
     traverse(sourceFile, visitors, context) {

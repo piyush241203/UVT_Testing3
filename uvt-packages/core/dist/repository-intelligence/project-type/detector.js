@@ -47,7 +47,11 @@ class ProjectTypeDetector {
         let projectType = 'Static';
         const evidence = [];
         // SSR frameworks
-        if (deps['next']) {
+        if (deps['laravel/framework']) {
+            projectType = 'SSR';
+            evidence.push('Laravel detected: server-side rendering model (SSR).');
+        }
+        else if (deps['next']) {
             // Next.js can be SSR, SSG, or hybrid — treat as Hybrid (can do both)
             projectType = 'Hybrid';
             evidence.push('Next.js detected: supports SSR, SSG, and Static simultaneously (Hybrid).');
@@ -77,6 +81,11 @@ class ProjectTypeDetector {
             projectType = 'SPA';
             evidence.push(`Client-side framework (${deps['react'] ? 'React' : deps['vue'] ? 'Vue' : deps['@angular/core'] ? 'Angular' : 'Svelte'}) without SSR wrapper: SPA.`);
         }
+        else if (this.hasPhpFiles(cwd)) {
+            const phpCount = this.countPhpFiles(cwd);
+            projectType = phpCount > 1 ? 'MPA' : 'Static';
+            evidence.push(`${phpCount} PHP file(s) found in root: ${projectType}.`);
+        }
         else if (this.hasHtmlFiles(cwd)) {
             // Pure HTML files — multi-page or single-page static
             const htmlCount = this.countHtmlFiles(cwd);
@@ -103,6 +112,22 @@ class ProjectTypeDetector {
     countHtmlFiles(cwd) {
         try {
             return fs.readdirSync(cwd).filter(f => f.endsWith('.html')).length;
+        }
+        catch {
+            return 0;
+        }
+    }
+    hasPhpFiles(cwd) {
+        try {
+            return fs.readdirSync(cwd).some(f => f.endsWith('.php'));
+        }
+        catch {
+            return false;
+        }
+    }
+    countPhpFiles(cwd) {
+        try {
+            return fs.readdirSync(cwd).filter(f => f.endsWith('.php')).length;
         }
         catch {
             return 0;

@@ -44,6 +44,7 @@ class FrameworkDetector {
         let confidence = 0.1;
         const evidence = [];
         const checks = [
+            { name: 'Laravel', dep: 'laravel/framework', config: 'artisan' },
             { name: 'Next.js', dep: 'next', config: 'next.config.js' },
             { name: 'Nuxt', dep: 'nuxt', config: 'nuxt.config.ts' },
             { name: 'SvelteKit', dep: '@sveltejs/kit', config: 'svelte.config.js' },
@@ -51,7 +52,8 @@ class FrameworkDetector {
             { name: 'Remix', dep: '@remix-run/react', config: 'remix.config.js' },
             { name: 'Angular', dep: '@angular/core', config: 'angular.json' },
             { name: 'Vue', dep: 'vue', config: 'vue.config.js' }, // Also handled by Vite check
-            { name: 'React', dep: 'react', config: 'react-scripts' } // CRA or generic
+            { name: 'React', dep: 'react', config: 'react-scripts' }, // CRA or generic
+            { name: 'PHP', dep: 'php', config: 'index.php' }
         ];
         for (const check of checks) {
             const hasDep = !!deps[check.dep];
@@ -75,6 +77,14 @@ class FrameworkDetector {
                 confidence = 0.6;
                 evidence.push(`Found configuration file "${check.config}".`);
                 break; // Stop at first matched framework
+            }
+        }
+        if (framework === 'Static HTML') {
+            const hasPhpFiles = fs.existsSync(context.cwd) && fs.readdirSync(context.cwd).some(f => f.endsWith('.php'));
+            if (hasPhpFiles) {
+                framework = 'PHP';
+                confidence = 0.7;
+                evidence.push('No JS frameworks detected, but plain .php files found in workspace root.');
             }
         }
         if (framework === 'React' && fs.existsSync(path.join(context.cwd, 'vite.config.ts'))) {

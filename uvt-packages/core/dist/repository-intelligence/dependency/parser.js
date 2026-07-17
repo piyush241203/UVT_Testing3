@@ -58,17 +58,33 @@ class DependencyParser {
                 shared_1.logger.warn(`RIE: Failed to parse package.json: ${e.message}`);
             }
         }
+        const composerJsonPath = path.join(cwd, 'composer.json');
+        if (fs.existsSync(composerJsonPath)) {
+            try {
+                const composerJson = JSON.parse(fs.readFileSync(composerJsonPath, 'utf-8'));
+                const composerDeps = {
+                    ...(composerJson.require || {}),
+                    ...(composerJson['require-dev'] || {})
+                };
+                dependencies = { ...dependencies, ...composerDeps };
+            }
+            catch (e) {
+                shared_1.logger.warn(`RIE: Failed to parse composer.json: ${e.message}`);
+            }
+        }
         // Only glob configuration files, lockfiles, and top level indicators to stay under 2 seconds.
         // Avoid deep traversal of src/ unless looking for specific framework entrypoints.
         const files = await (0, fast_glob_1.default)([
-            '*.json', '*.js', '*.ts', '*.mjs', '*.cjs',
-            'src/**/*.{ts,tsx,js,jsx,vue,svelte}',
-            'app/**/*.{ts,tsx,js,jsx}',
-            'pages/**/*.{ts,tsx,js,jsx}'
+            '*.json', '*.js', '*.ts', '*.mjs', '*.cjs', '*.php', 'artisan',
+            'src/**/*.{ts,tsx,js,jsx,vue,svelte,php}',
+            'app/**/*.{ts,tsx,js,jsx,php}',
+            'pages/**/*.{ts,tsx,js,jsx,php}',
+            'routes/**/*.php',
+            'views/**/*.php'
         ], {
             cwd,
             absolute: false,
-            ignore: ['**/node_modules/**', '**/dist/**', '**/build/**', '**/.git/**', '**/.uvt/**'],
+            ignore: ['**/node_modules/**', '**/dist/**', '**/build/**', '**/.git/**', '**/.uvt/**', '**/vendor/**'],
             onlyFiles: true,
             deep: 4 // restrict depth to stay incredibly fast
         });

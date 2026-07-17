@@ -19,6 +19,7 @@ export declare class PercyProvider implements VisualProvider {
         route?: any;
     }): Promise<void>;
     finalize(): Promise<void>;
+    private stopPercyAgent;
     private startPercyAgent;
     private checkPercyAgent;
 }

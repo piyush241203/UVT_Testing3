@@ -15,6 +15,7 @@
   },
   "devDependencies": {
     "vitepress": "^1.0.0-rc.31",
+    "@types/node": "^26.1.0",
     "rimraf": "^5.0.7"
   }
 }

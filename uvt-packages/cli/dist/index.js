@@ -106,6 +106,19 @@ function detectWorkspace(cwd) {
 }
 function detectFramework(cwd) {
     try {
+        // PHP detection: check for composer.json first
+        const composerPath = path.join(cwd, 'composer.json');
+        if (fs.existsSync(composerPath)) {
+            const composer = JSON.parse(fs.readFileSync(composerPath, 'utf-8'));
+            const requires = { ...(composer.require || {}), ...(composer['require-dev'] || {}) };
+            if (requires['laravel/framework'])
+                return 'Laravel';
+            return 'PHP';
+        }
+        // Check for plain .php files
+        const hasPhpFiles = fs.existsSync(cwd) && fs.readdirSync(cwd).some(f => f.endsWith('.php'));
+        if (hasPhpFiles)
+            return 'PHP';
         const packageJsonPath = path.join(cwd, 'package.json');
         if (fs.existsSync(packageJsonPath)) {
             const pkg = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
@@ -173,7 +186,7 @@ function generateGHAWorkflow(cwd) {
     else {
         const hasLock = fs.existsSync(path.join(cwd, 'package-lock.json'));
         installCmd = hasLock ? 'npm ci' : 'npm install';
-        cacheType = 'npm';
+        cacheType = hasLock ? 'npm' : '';
         lockfileGlob = '**/package-lock.json';
     }
     if (isWorkspace) {
@@ -189,24 +202,99 @@ function generateGHAWorkflow(cwd) {
 `;
         }
     }
-    let startDevCmd = 'npx vite --port 3000 --strictPort &';
+    // ─── Framework-aware server configuration ──────────────────────────────
+    // Read package.json for deep framework detection
+    let pkgDeps = {};
     try {
         const packageJsonPath = path.join(cwd, 'package.json');
         if (fs.existsSync(packageJsonPath)) {
             const pkg = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
-            const deps = { ...(pkg.dependencies || {}), ...(pkg.devDependencies || {}) };
-            if (deps.next) {
-                startDevCmd = `npx next start -p 3000 &`;
-            }
-            else if (deps.nuxt || deps['@nuxt/kit']) {
-                startDevCmd = `npx nuxt start --port 3000 &`;
-            }
-            else if (deps['@vue/cli-service']) {
-                startDevCmd = `npm run serve -- --port 3000 &`;
-            }
+            pkgDeps = { ...(pkg.dependencies || {}), ...(pkg.devDependencies || {}) };
         }
     }
     catch { }
+    const isLaravel = detectedFramework === 'Laravel';
+    const isPhp = detectedFramework === 'PHP';
+    const isAngular = !!(pkgDeps['@angular/core']);
+    const isSvelteKit = !!(pkgDeps['@sveltejs/kit']);
+    const isSvelte = !!(pkgDeps['svelte']) && !isSvelteKit;
+    const isNext = !!(pkgDeps['next']);
+    const isNuxt = !!(pkgDeps['nuxt'] || pkgDeps['@nuxt/kit']);
+    const isRemix = !!(pkgDeps['@remix-run/react']);
+    const isVueCLI = !!(pkgDeps['@vue/cli-service']);
+    const isVite = !!(pkgDeps['vite']);
+    // Framework display label
+    const frameworkLabel = isAngular ? 'Angular' :
+        isSvelteKit ? 'SvelteKit' :
+            isSvelte ? 'Svelte' :
+                isNext ? 'Next.js' :
+                    isNuxt ? 'Nuxt' :
+                        isRemix ? 'Remix' :
+                            isLaravel ? 'Laravel' :
+                                isPhp ? 'PHP' :
+                                    detectedFramework;
+    // Per-framework port
+    let devPort;
+    if (isAngular) {
+        devPort = 4200;
+    }
+    else if (isSvelteKit || (isSvelte && isVite)) {
+        devPort = 5173;
+    }
+    else if (isNext || isNuxt) {
+        devPort = 3000;
+    }
+    else if (isVite) {
+        devPort = 5173;
+    }
+    else if (isLaravel || isPhp) {
+        devPort = 8000;
+    }
+    else {
+        devPort = 3000;
+    }
+    // Per-framework dev server command & teardown
+    let startDevCmd;
+    let teardownProcess;
+    if (isAngular) {
+        startDevCmd = `npm run start &`;
+        teardownProcess = 'node';
+    }
+    else if (isSvelteKit) {
+        startDevCmd = `npm run dev &`;
+        teardownProcess = 'node';
+    }
+    else if (isNext) {
+        startDevCmd = `npx next start -p ${devPort} &`;
+        teardownProcess = 'node';
+    }
+    else if (isNuxt) {
+        startDevCmd = `npx nuxt start --port ${devPort} &`;
+        teardownProcess = 'node';
+    }
+    else if (isRemix) {
+        startDevCmd = `npm run start &`;
+        teardownProcess = 'node';
+    }
+    else if (isVueCLI) {
+        startDevCmd = `npm run serve -- --port ${devPort} &`;
+        teardownProcess = 'node';
+    }
+    else if (isLaravel) {
+        startDevCmd = `php artisan serve --port ${devPort} &`;
+        teardownProcess = 'php';
+    }
+    else if (isPhp) {
+        startDevCmd = `php -S 0.0.0.0:${devPort} &`;
+        teardownProcess = 'php';
+    }
+    else {
+        // Vite-based: React, Vue w/ Vite, HTML, plain Svelte
+        startDevCmd = `npx vite --port ${devPort} --strictPort &`;
+        teardownProcess = 'vite';
+    }
+    // Build step fault tolerance: non-critical builds are continue-on-error
+    const buildContinueOnError = (!isAngular && !isNext && !isNuxt && !isLaravel && !isPhp);
     let ensureCliCmd = '';
     let runCliCmd = '';
     if (isWorkspace) {
@@ -222,10 +310,9 @@ function generateGHAWorkflow(cwd) {
             exit 1
           fi`;
     }
-    else {
-        if (detectedPM === 'pnpm') {
-            runCliCmd = 'pnpm exec uvt';
-            ensureCliCmd = `      - name: Ensure UVT CLI is installed
+    else if (detectedPM === 'pnpm') {
+        runCliCmd = 'pnpm exec uvt';
+        ensureCliCmd = `      - name: Ensure UVT CLI is installed
         run: |
           if ! pnpm exec uvt --version &>/dev/null; then
             echo "UVT CLI not found. Installing..."
@@ -238,10 +325,10 @@ function generateGHAWorkflow(cwd) {
               exit 1
             }
           fi`;
-        }
-        else if (detectedPM === 'yarn') {
-            runCliCmd = 'yarn uvt';
-            ensureCliCmd = `      - name: Ensure UVT CLI is installed
+    }
+    else if (detectedPM === 'yarn') {
+        runCliCmd = 'yarn uvt';
+        ensureCliCmd = `      - name: Ensure UVT CLI is installed
         run: |
           if ! yarn run uvt --version &>/dev/null; then
             echo "UVT CLI not found. Installing..."
@@ -254,10 +341,10 @@ function generateGHAWorkflow(cwd) {
               exit 1
             }
           fi`;
-        }
-        else if (detectedPM === 'bun') {
-            runCliCmd = 'bunx uvt';
-            ensureCliCmd = `      - name: Ensure UVT CLI is installed
+    }
+    else if (detectedPM === 'bun') {
+        runCliCmd = 'bunx uvt';
+        ensureCliCmd = `      - name: Ensure UVT CLI is installed
         run: |
           if ! bunx uvt --version &>/dev/null; then
             echo "UVT CLI not found. Installing..."
@@ -270,10 +357,10 @@ function generateGHAWorkflow(cwd) {
               exit 1
             }
           fi`;
-        }
-        else {
-            runCliCmd = 'npx uvt';
-            ensureCliCmd = `      - name: Ensure UVT CLI is installed
+    }
+    else {
+        runCliCmd = 'npx uvt';
+        ensureCliCmd = `      - name: Ensure UVT CLI is installed
         run: |
           if ! npx uvt --version &>/dev/null; then
             echo "UVT CLI not found. Installing..."
@@ -286,9 +373,21 @@ function generateGHAWorkflow(cwd) {
               exit 1
             }
           fi`;
-        }
     }
     const setupNodeCache = cacheType ? `cache: '${cacheType}'` : '';
+    const setupPhpStep = (isLaravel || isPhp) ? `
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, xml, ctype, iconv, json
+
+      - name: Install PHP dependencies
+        run: |
+          if [ -f composer.json ]; then
+            composer install --no-progress --no-interaction --prefer-dist --no-dev || true
+          fi
+` : '';
     return `name: Visual Regression Testing
 
 on:
@@ -305,25 +404,25 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0 # Full history required for selective testing
-\${{setupPnpm}}\${{setupBun}}
+${setupPnpm}${setupBun}${setupPhpStep}
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          \${{setupNodeCache}}
+          ${setupNodeCache ? `${setupNodeCache}` : ''}
 
       - name: Install dependencies
-        run: \${{installCmd}}
+        run: ${installCmd}
 
       - name: UVT Environment Diagnostic
         run: |
           echo "=== UVT Environment ==="
-          echo "Package Manager : \${{isWorkspace ? 'pnpm' : detectedPM}}"
-          echo "Workspace       : \${{isWorkspace ? 'Yes' : 'No'}}"
-          echo "Framework       : \${{detectedFramework}}"
-          echo "CLI Source      : \${{isWorkspace ? 'Workspace' : 'Published Package'}}"
-          echo "Node            : \\\$(node -v)"
-          echo "Working Dir     : \\\$(pwd)"
+          echo "Package Manager : ${isWorkspace ? 'pnpm' : detectedPM}"
+          echo "Workspace       : ${isWorkspace ? 'Yes' : 'No'}"
+          echo "Framework       : ${frameworkLabel}"
+          echo "CLI Source      : ${isWorkspace ? 'Workspace' : 'Published Package'}"
+          echo "Node            : \$(node -v)"
+          echo "Working Dir     : \$(pwd)"
           
           if npx playwright --version &>/dev/null; then
             echo "Playwright      : Installed"
@@ -332,23 +431,23 @@ jobs:
           fi
           
           echo "=== Percy Diagnostics ==="
-          if [ -n "\\\$PERCY_TOKEN" ]; then
+          if [ -n "\$PERCY_TOKEN" ]; then
             echo "PERCY_TOKEN: Present"
-            echo "Length: \\\${#PERCY_TOKEN}"
-            MASKED_TOKEN="\\\${PERCY_TOKEN:0:4}****\\\${PERCY_TOKEN: -4}"
-            echo "Masked: \\\$MASKED_TOKEN"
+            echo "Length: \${#PERCY_TOKEN}"
+            MASKED_TOKEN="\${PERCY_TOKEN:0:4}****\${PERCY_TOKEN: -4}"
+            echo "Masked: \$MASKED_TOKEN"
           else
             echo "PERCY_TOKEN: Not Present"
           fi
           
           if npx percy --version &>/dev/null; then
-            echo "Percy CLI: \\\$(npx percy --version)"
+            echo "Percy CLI: \$(npx percy --version)"
           else
             echo "Percy CLI: Not Installed"
           fi
           
           if npm ls @percy/playwright &>/dev/null; then
-            echo "@percy/playwright: \\\$(npm ls @percy/playwright | grep @percy/playwright)"
+            echo "@percy/playwright: \$(npm ls @percy/playwright | grep @percy/playwright)"
           else
             echo "@percy/playwright: Not Installed or not found in npm ls"
           fi
@@ -359,14 +458,14 @@ jobs:
           echo "======================="
         env:
           PERCY_TOKEN: \${{ secrets.PERCY_TOKEN }}
-\${{ensureCliCmd}}
+${ensureCliCmd}
 
       - name: Cache Playwright Browsers
         id: playwright-cache
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: \${{ runner.os }}-playwright-\${{ hashFiles('\${{lockfileGlob}}') }}
+          key: \${{ runner.os }}-playwright-\${{ hashFiles('${lockfileGlob}') }}
 
       - name: Install Playwright Browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
@@ -376,42 +475,30 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.local/share/percy
-          key: \${{ runner.os }}-percy-\${{ hashFiles('\${{lockfileGlob}}') }}
+          key: \${{ runner.os }}-percy-\${{ hashFiles('${lockfileGlob}') }}
 
       - name: Build frontend application
         run: npm run build --if-present
+        ${buildContinueOnError ? 'continue-on-error: true' : ''}
 
       - name: Start dev server in background
-        run: \${{startDevCmd}}
+        run: ${startDevCmd}
 
       - name: Wait for local server
         run: |
-          for i in {1..30}; do
-            curl -s http://localhost:3000 && break || sleep 1
+          for i in {1..60}; do
+            curl -s http://localhost:${devPort} && break || sleep 2
           done
 
       - name: Run visual regression tests
-        run: \${{runCliCmd}} test --changed --port 3000
+        run: ${runCliCmd} test --changed --port ${devPort}
         env:
           PERCY_TOKEN: \${{ secrets.PERCY_TOKEN }}
           
       - name: Teardown background processes
         if: always()
-        run: pkill -f "\${{devCommand}}" || true
-`
-        .replace(/\$\{\{setupPnpm\}\}/g, setupPnpm)
-        .replace(/\$\{\{setupBun\}\}/g, setupBun)
-        .replace(/\$\{\{setupNodeCache\}\}/g, setupNodeCache)
-        .replace(/\$\{\{installCmd\}\}/g, installCmd)
-        .replace(/\$\{\{isWorkspace \? 'pnpm' : detectedPM\}\}/g, isWorkspace ? 'pnpm' : detectedPM)
-        .replace(/\$\{\{isWorkspace \? 'Yes' : 'No'\}\}/g, isWorkspace ? 'Yes' : 'No')
-        .replace(/\$\{\{detectedFramework\}\}/g, detectedFramework)
-        .replace(/\$\{\{isWorkspace \? 'Workspace' : 'Published Package'\}\}/g, isWorkspace ? 'Workspace' : 'Published Package')
-        .replace(/\$\{\{ensureCliCmd\}\}/g, ensureCliCmd)
-        .replace(/\$\{\{lockfileGlob\}\}/g, lockfileGlob)
-        .replace(/\$\{\{runCliCmd\}\}/g, runCliCmd)
-        .replace(/\$\{\{startDevCmd\}\}/g, startDevCmd)
-        .replace(/\$\{\{devCommand\}\}/g, detectedFramework === 'Static HTML' || detectedFramework === 'Vue' || detectedFramework === 'React' ? 'vite' : 'node');
+        run: pkill -f "${teardownProcess}" || true
+`;
 }
 // ==========================================
 // Command: init
@@ -505,6 +592,34 @@ export default {
         const actionYaml = generateGHAWorkflow(cwd);
         fs.writeFileSync(githubWorkflowPath, actionYaml, 'utf-8');
         shared_1.logger.success('Scaffolded GitHub Action workflow at .github/workflows/uvt.yml');
+    }
+    // ─── Always: Ensure correct GHA workflow (framework-aware) ─────────────
+    // Regardless of which path was taken (URAE or legacy), always write the
+    // framework-aware GHA workflow so port, dev server, and teardown are correct.
+    {
+        const githubWorkflowDir = path.join(cwd, '.github', 'workflows');
+        const githubWorkflowPath = path.join(githubWorkflowDir, 'uvt.yml');
+        fs.mkdirSync(githubWorkflowDir, { recursive: true });
+        const actionYaml = generateGHAWorkflow(cwd);
+        fs.writeFileSync(githubWorkflowPath, actionYaml, 'utf-8');
+        shared_1.logger.success('Generated framework-aware GitHub Actions workflow at .github/workflows/uvt.yml');
+    }
+    // ─── Always: Ensure uvt.config.ts exists ────────────────────────────────
+    {
+        const configPath = path.join(cwd, 'uvt.config.ts');
+        if (!fs.existsSync(configPath)) {
+            const configTemplate = `// Universal Visual Testing (UVT) Configuration File
+export default {
+  provider: 'percy',
+  framework: 'auto',
+  cache: true,
+  workers: 'auto',
+  report: { html: true, json: true },
+  dynamicDetection: true
+};\n`;
+            fs.writeFileSync(configPath, configTemplate, 'utf-8');
+            shared_1.logger.success('Created configuration file: uvt.config.ts');
+        }
     }
     // ─── Always: Install dependencies + Playwright browsers ────────────────
     const packageJsonPath = path.join(cwd, 'package.json');

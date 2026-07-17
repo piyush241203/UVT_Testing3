@@ -8,5 +8,7 @@ export declare class ProjectTypeDetector implements RIEDetector {
     detect(context: RIEContext): Promise<void>;
     private hasHtmlFiles;
     private countHtmlFiles;
+    private hasPhpFiles;
+    private countPhpFiles;
 }
 //# sourceMappingURL=detector.d.ts.map

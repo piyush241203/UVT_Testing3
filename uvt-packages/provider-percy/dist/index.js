@@ -103,17 +103,27 @@ class PercyProvider {
             return;
         }
         shared_1.logger.info(`Sending DOM snapshot "${name}" to Percy...`);
-        await (0, playwright_1.default)(page, name);
+        const percyPromise = (0, playwright_1.default)(page, name);
+        const timeoutPromise = new Promise((resolve, reject) => {
+            setTimeout(() => reject(new Error(`Percy snapshot timed out after 15 seconds for ${name}`)), 15000);
+        });
+        await Promise.race([percyPromise, timeoutPromise]);
     }
     async finalize() {
         if (this.percyRunning) {
             shared_1.logger.success('All snapshots sent to Percy successfully.');
-            if (this.autoStarted) {
-                shared_1.logger.info('Stopping background Percy CLI server...');
+            shared_1.logger.info('Finalizing Percy build and stopping local agent...');
+            const stopped = await this.stopPercyAgent();
+            if (stopped) {
+                shared_1.logger.success('Percy build finalized and local agent stopped successfully.');
+            }
+            else {
+                shared_1.logger.warn('Failed to stop Percy agent via API. Falling back to command line...');
                 try {
                     const isWin = process.platform === 'win32';
                     const cmd = isWin ? 'npx.cmd' : 'npx';
                     require('child_process').execSync(`${cmd} percy exec:stop`, { stdio: 'ignore' });
+                    shared_1.logger.success('Percy build finalized via command line.');
                 }
                 catch (e) {
                     shared_1.logger.error('Failed to stop background Percy server.');
@@ -121,14 +131,43 @@ class PercyProvider {
             }
         }
     }
+    stopPercyAgent() {
+        return new Promise((resolve) => {
+            const req = http.request({
+                host: '127.0.0.1',
+                port: 5338,
+                path: '/percy/stop',
+                method: 'POST',
+                timeout: 15000
+            }, (res) => {
+                resolve(res.statusCode === 200);
+            });
+            req.on('error', () => {
+                resolve(false);
+            });
+            req.on('timeout', () => {
+                req.destroy();
+                resolve(false);
+            });
+            req.end();
+        });
+    }
     startPercyAgent() {
         return new Promise((resolve) => {
             const isWin = process.platform === 'win32';
             const cmd = isWin ? 'npx.cmd' : 'npx';
+            const fs = require('fs');
+            const path = require('path');
+            const uvtDir = path.join(process.cwd(), '.uvt');
+            if (!fs.existsSync(uvtDir)) {
+                fs.mkdirSync(uvtDir, { recursive: true });
+            }
+            const logStream = fs.createWriteStream(path.join(uvtDir, 'percy.log'), { flags: 'a' });
             const child = require('child_process').spawn(cmd, ['--yes', 'percy', 'exec:start'], {
-                detached: !isWin, // Detached mode on Windows for npx can cause it to hang or fail
-                stdio: 'ignore',
-                env: process.env
+                detached: !isWin,
+                stdio: ['ignore', logStream, logStream],
+                env: process.env,
+                shell: isWin
             });
             child.unref();
             let attempts = 0;

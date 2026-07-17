@@ -54,7 +54,10 @@ exports.configSchema = zod_1.z.object({
         zod_1.z.literal('next'),
         zod_1.z.literal('vue'),
         zod_1.z.literal('angular'),
-        zod_1.z.literal('svelte')
+        zod_1.z.literal('svelte'),
+        zod_1.z.literal('php'),
+        zod_1.z.literal('laravel'),
+        zod_1.z.literal('html')
     ]).default('auto'),
     cache: zod_1.z.boolean().default(true),
     workers: zod_1.z.union([zod_1.z.literal('auto'), zod_1.z.number().int().positive()]).default('auto'),
