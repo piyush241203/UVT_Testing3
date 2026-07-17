@@ -99,6 +99,11 @@ jobs:
             curl -s http://localhost:3000 && break || sleep 2
           done
 
+      - name: Check port 5338 listener
+        run: |
+          sudo lsof -i :5338 || echo "No process on port 5338"
+          netstat -tuln | grep 5338 || echo "Netstat: No process on port 5338"
+
       - name: Run visual regression tests
         run: npx uvt test --changed --port 3000
         env:
