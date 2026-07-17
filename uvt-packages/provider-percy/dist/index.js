@@ -62,12 +62,16 @@ class PercyProvider {
         if (options.isSelective) {
             shared_1.logger.info('Selective run detected. Percy Partial Build mode temporarily DISABLED for diagnostic audit.');
         }
-        // Check if Percy agent is running
-        this.percyRunning = !!process.env.PERCY_SERVER_ADDRESS || await this.checkPercyAgent();
-        if (this.percyRunning) {
+        // First: check if Percy is already running (e.g. started by `percy exec` wrapper)
+        const alreadyRunning = await this.checkPercyAgent();
+        if (alreadyRunning) {
             shared_1.logger.success('Percy agent detected and connected successfully.');
+            this.percyRunning = true;
+            this.autoStarted = false; // managed externally, don't stop on finalize
+            return;
         }
-        else if (process.env.PERCY_TOKEN) {
+        // Percy not running yet - start it ourselves if token is available
+        if (process.env.PERCY_TOKEN) {
             shared_1.logger.info('Percy agent not detected. Starting Percy CLI server in background...');
             const started = await this.startPercyAgent();
             if (started) {
@@ -77,11 +81,12 @@ class PercyProvider {
             }
             else {
                 shared_1.logger.warn('Failed to start background Percy server. UVT will run in standalone mode.');
+                shared_1.logger.warn('Tip: wrap your command with `percy exec` for more reliable Percy integration.');
             }
         }
         else {
             shared_1.logger.warn('Percy agent not detected and PERCY_TOKEN not set. UVT is running in standalone mode.');
-            shared_1.logger.warn('To upload to Percy, either set PERCY_TOKEN or wrap your test command: `npx percy exec -- npx uvt test`');
+            shared_1.logger.warn('To upload to Percy, set PERCY_TOKEN and wrap your command: `npx percy exec -- npx uvt test`');
         }
     }
     async snapshot(page, opts) {
@@ -105,29 +110,36 @@ class PercyProvider {
         shared_1.logger.info(`Sending DOM snapshot "${name}" to Percy...`);
         const percyPromise = (0, playwright_1.default)(page, name);
         const timeoutPromise = new Promise((resolve, reject) => {
-            setTimeout(() => reject(new Error(`Percy snapshot timed out after 15 seconds for ${name}`)), 15000);
+            setTimeout(() => reject(new Error(`Percy snapshot timed out after 30 seconds for ${name}`)), 30000);
         });
         await Promise.race([percyPromise, timeoutPromise]);
     }
     async finalize() {
         if (this.percyRunning) {
             shared_1.logger.success('All snapshots sent to Percy successfully.');
-            shared_1.logger.info('Finalizing Percy build and stopping local agent...');
-            const stopped = await this.stopPercyAgent();
-            if (stopped) {
-                shared_1.logger.success('Percy build finalized and local agent stopped successfully.');
+            if (this.autoStarted) {
+                // We started Percy ourselves, so we need to stop it
+                shared_1.logger.info('Finalizing Percy build and stopping local agent...');
+                const stopped = await this.stopPercyAgent();
+                if (stopped) {
+                    shared_1.logger.success('Percy build finalized and local agent stopped successfully.');
+                }
+                else {
+                    shared_1.logger.warn('Failed to stop Percy agent via API. Falling back to command line...');
+                    try {
+                        const isWin = process.platform === 'win32';
+                        const cmd = isWin ? 'npx.cmd' : 'npx';
+                        require('child_process').execSync(`${cmd} percy exec:stop`, { stdio: 'ignore' });
+                        shared_1.logger.success('Percy build finalized via command line.');
+                    }
+                    catch (e) {
+                        shared_1.logger.error('Failed to stop background Percy server.');
+                    }
+                }
             }
             else {
-                shared_1.logger.warn('Failed to stop Percy agent via API. Falling back to command line...');
-                try {
-                    const isWin = process.platform === 'win32';
-                    const cmd = isWin ? 'npx.cmd' : 'npx';
-                    require('child_process').execSync(`${cmd} percy exec:stop`, { stdio: 'ignore' });
-                    shared_1.logger.success('Percy build finalized via command line.');
-                }
-                catch (e) {
-                    shared_1.logger.error('Failed to stop background Percy server.');
-                }
+                // Percy was started externally (e.g. by `percy exec`), don't stop it
+                shared_1.logger.info('Percy agent managed externally (e.g. via percy exec). Skipping stop.');
             }
         }
     }

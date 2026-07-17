@@ -25,51 +25,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: UVT Environment Diagnostic
-        run: |
-          echo "=== UVT Environment ==="
-          echo "Package Manager : npm"
-          echo "Workspace       : No"
-          echo "Framework       : React"
-          echo "CLI Source      : Published Package"
-          echo "Node            : \$(node -v)"
-          echo "Working Dir     : \$(pwd)"
-          
-          if npx playwright --version &>/dev/null; then
-            echo "Playwright      : Installed"
-          else
-            echo "Playwright      : Not Installed"
-          fi
-          
-          echo "=== Percy Diagnostics ==="
-          if [ -n "\$PERCY_TOKEN" ]; then
-            echo "PERCY_TOKEN: Present"
-            echo "Length: \${#PERCY_TOKEN}"
-            MASKED_TOKEN="\${PERCY_TOKEN:0:4}****\${PERCY_TOKEN: -4}"
-            echo "Masked: \$MASKED_TOKEN"
-          else
-            echo "PERCY_TOKEN: Not Present"
-          fi
-          
-          if npx percy --version &>/dev/null; then
-            echo "Percy CLI: \$(npx percy --version)"
-          else
-            echo "Percy CLI: Not Installed"
-          fi
-          
-          if npm ls @percy/playwright &>/dev/null; then
-            echo "@percy/playwright: \$(npm ls @percy/playwright | grep @percy/playwright)"
-          else
-            echo "@percy/playwright: Not Installed or not found in npm ls"
-          fi
-          
-          echo "--- Percy Environment Variables ---"
-          env | grep PERCY || echo "No other PERCY_* vars found"
-          
-          echo "======================="
-        env:
-          PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
-
       - name: Cache Playwright Browsers
         id: playwright-cache
         uses: actions/cache@v4
@@ -99,33 +54,10 @@ jobs:
             curl -s http://localhost:3000 && break || sleep 2
           done
 
-      - name: Check port 5338 listener
-        run: |
-          sudo lsof -i :5338 || echo "No process on port 5338"
-          netstat -tuln | grep 5338 || echo "Netstat: No process on port 5338"
-          node -e "
-            const http = require('http');
-            const req = http.request({
-              host: '127.0.0.1',
-              port: 5338,
-              path: '/percy/healthcheck',
-              method: 'GET',
-              timeout: 1000
-            }, (res) => {
-              console.log('Status Code:', res.statusCode);
-              let data = '';
-              res.on('data', c => data += c);
-              res.on('end', () => console.log('Data:', data));
-            });
-            req.on('error', (err) => console.log('Error:', err.message));
-            req.end();
-          "
-
       - name: Run visual regression tests
-        run: npx uvt test --changed --port 3000
+        run: npx percy exec -- npx uvt test --changed --port 3000
         env:
           PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
-          PERCY_SERVER_ADDRESS: http://127.0.0.1:5338
 
       - name: Print Percy logs
         if: always()
@@ -136,7 +68,7 @@ jobs:
           else
             echo "No Percy CLI logs found."
           fi
-          
+
       - name: Teardown background processes
         if: always()
-        run: pkill -f "vite" || pkill -f "node" || true
+        run: pkill -f "vite" || true

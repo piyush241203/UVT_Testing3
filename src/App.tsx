@@ -220,12 +220,13 @@ function Layout({ children }: { children: React.ReactNode }) {
       `}</style>
       <header style={{
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        borderBottom: '1px solid #ccc', padding: '12px 24px',
-        background: theme === 'light' ? '#1e1b4b' : '#0f0f0f',
+        borderBottom: '3px solid #7c3aed', padding: '14px 28px',
+        background: theme === 'light' ? 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%)' : '#0a0a0f',
+        boxShadow: '0 4px 20px rgba(124,58,237,0.3)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <button onClick={() => setSidebarOpen(v => !v)} style={{ background: '#22c55e', color: '#fff', border: 'none', borderRadius: '8px', padding: '6px 12px', cursor: 'pointer', fontSize: '16px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>☰ Menu</button>
-          <h2 style={{ margin: 0, color: '#10b981', fontWeight: '800', letterSpacing: '-0.5px' }}>✨ UVT React Demo — UI Round 2 🎯</h2>
+          <button onClick={() => setSidebarOpen(v => !v)} style={{ background: 'linear-gradient(135deg, #7c3aed, #a855f7)', color: '#fff', border: 'none', borderRadius: '10px', padding: '8px 14px', cursor: 'pointer', fontSize: '16px', boxShadow: '0 4px 12px rgba(124,58,237,0.4)', fontWeight: '600' }}>☰ Menu</button>
+          <h2 style={{ margin: 0, background: 'linear-gradient(135deg, #a78bfa, #34d399)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontWeight: '800', letterSpacing: '-0.5px', fontSize: '20px' }}>🚀 UVT React Demo v3 — Percy Verified ✅</h2>
         </div>
         <nav style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
           <Link to="/">Home</Link>
@@ -266,24 +267,40 @@ function Layout({ children }: { children: React.ReactNode }) {
 function Home() {
   return (
     <div>
-      <h3 style={{ color: '#e05d44' }}>✨ Home Page</h3>
-      <p>Welcome to UVT React Demo v2</p>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px', marginTop: '16px' }}>
-        <div style={{ padding: '16px', border: '1px solid #eee', borderRadius: '8px' }}>
-          <h4 style={{ marginTop: 0 }}>Live Clock</h4>
+      {/* Hero Banner */}
+      <div style={{
+        background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #0ea5e9 100%)',
+        borderRadius: '16px',
+        padding: '40px 32px',
+        marginBottom: '24px',
+        color: '#fff',
+        boxShadow: '0 8px 32px rgba(79,70,229,0.4)',
+      }}>
+        <h1 style={{ margin: '0 0 8px', fontSize: '2.2rem', fontWeight: '900', letterSpacing: '-1px' }}>🚀 UVT React Demo v3</h1>
+        <p style={{ margin: '0 0 20px', fontSize: '1.1rem', opacity: 0.9 }}>Visual regression testing powered by Percy + Playwright</p>
+        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+          <span style={{ background: 'rgba(255,255,255,0.2)', borderRadius: '20px', padding: '6px 16px', fontSize: '13px', fontWeight: '600' }}>✅ Percy Integrated</span>
+          <span style={{ background: 'rgba(255,255,255,0.2)', borderRadius: '20px', padding: '6px 16px', fontSize: '13px', fontWeight: '600' }}>⚡ Selective Testing</span>
+          <span style={{ background: 'rgba(255,255,255,0.2)', borderRadius: '20px', padding: '6px 16px', fontSize: '13px', fontWeight: '600' }}>🎯 21 Routes Covered</span>
+        </div>
+      </div>
+      {/* Feature Cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px', marginBottom: '16px' }}>
+        <div style={{ padding: '20px', background: 'linear-gradient(135deg, #064e3b, #065f46)', borderRadius: '12px', color: '#fff', boxShadow: '0 4px 16px rgba(6,78,59,0.3)' }}>
+          <h4 style={{ marginTop: 0, color: '#34d399' }}>🕐 Live Clock</h4>
           <LiveClock />
         </div>
-        <div style={{ padding: '16px', border: '1px solid #eee', borderRadius: '8px' }}>
-          <h4 style={{ marginTop: 0 }}>Countdown</h4>
+        <div style={{ padding: '20px', background: 'linear-gradient(135deg, #1e1b4b, #312e81)', borderRadius: '12px', color: '#fff', boxShadow: '0 4px 16px rgba(49,46,129,0.3)' }}>
+          <h4 style={{ marginTop: 0, color: '#a78bfa' }}>⏱ Countdown</h4>
           <CountdownTimer seconds={600} />
         </div>
-        <div style={{ padding: '16px', border: '1px solid #eee', borderRadius: '8px' }}>
-          <h4 style={{ marginTop: 0 }}>Progress</h4>
-          <ProgressBar value={40} />
+        <div style={{ padding: '20px', background: 'linear-gradient(135deg, #0c4a6e, #075985)', borderRadius: '12px', color: '#fff', boxShadow: '0 4px 16px rgba(12,74,110,0.3)' }}>
+          <h4 style={{ marginTop: 0, color: '#38bdf8' }}>📊 Progress</h4>
+          <ProgressBar value={72} />
         </div>
-        <div style={{ padding: '16px', border: '1px solid #eee', borderRadius: '8px' }}>
-          <h4 style={{ marginTop: 0 }}>Activity</h4>
-          <p><RelativeTime base={new Date(Date.now() - 120000)} /> — Last deployment</p>
+        <div style={{ padding: '20px', background: 'linear-gradient(135deg, #4c1d95, #5b21b6)', borderRadius: '12px', color: '#fff', boxShadow: '0 4px 16px rgba(76,29,149,0.3)' }}>
+          <h4 style={{ marginTop: 0, color: '#c4b5fd' }}>🔔 Activity</h4>
+          <p style={{ margin: 0 }}><RelativeTime base={new Date(Date.now() - 120000)} /> — Last deployment</p>
         </div>
       </div>
       <div style={{ marginTop: '16px' }}>
