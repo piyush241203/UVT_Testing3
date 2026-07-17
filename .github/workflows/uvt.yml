@@ -103,6 +103,23 @@ jobs:
         run: |
           sudo lsof -i :5338 || echo "No process on port 5338"
           netstat -tuln | grep 5338 || echo "Netstat: No process on port 5338"
+          node -e "
+            const http = require('http');
+            const req = http.request({
+              host: '127.0.0.1',
+              port: 5338,
+              path: '/percy/healthcheck',
+              method: 'GET',
+              timeout: 1000
+            }, (res) => {
+              console.log('Status Code:', res.statusCode);
+              let data = '';
+              res.on('data', c => data += c);
+              res.on('end', () => console.log('Data:', data));
+            });
+            req.on('error', (err) => console.log('Error:', err.message));
+            req.end();
+          "
 
       - name: Run visual regression tests
         run: npx uvt test --changed --port 3000
