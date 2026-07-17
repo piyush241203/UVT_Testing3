@@ -103,6 +103,7 @@ jobs:
         run: npx uvt test --changed --port 3000
         env:
           PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+          PERCY_SERVER_ADDRESS: http://127.0.0.1:5338
 
       - name: Print Percy logs
         if: always()
