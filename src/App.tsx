@@ -315,20 +315,43 @@ function Home() {
 function About() {
   return (
     <div>
-      <h3>About</h3>
-      <p>UVT React Demo expanded for RC-02 — stress-testing framework detection, route scanning, and DSE stabilization at scale.</p>
-      <div style={{ display: 'flex', gap: '16px', marginTop: '16px', flexWrap: 'wrap' }}>
-        {['Alice', 'Bob', 'Carol'].map(name => (
-          <div key={name} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+      {/* About Banner */}
+      <div style={{
+        background: 'linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0ea5e9 100%)',
+        borderRadius: '16px', padding: '36px 28px', marginBottom: '24px', color: '#fff',
+        boxShadow: '0 8px 32px rgba(14,165,233,0.3)',
+      }}>
+        <h1 style={{ margin: '0 0 8px', fontSize: '1.8rem', fontWeight: 900 }}>🧪 About UVT React Demo</h1>
+        <p style={{ margin: '0 0 16px', opacity: 0.85 }}>Stress-testing framework detection, route scanning, and DSE stabilization at scale — v3 edition.</p>
+        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+          {['Percy Integrated', 'DSE Engine', '21 Routes', 'Selective Testing'].map(tag => (
+            <span key={tag} style={{ background: 'rgba(255,255,255,0.15)', borderRadius: '20px', padding: '5px 14px', fontSize: '12px', fontWeight: 600, border: '1px solid rgba(255,255,255,0.25)' }}>{tag}</span>
+          ))}
+        </div>
+      </div>
+      {/* Team cards */}
+      <h2 style={{ fontSize: '1.1rem', color: '#0ea5e9', fontWeight: 700, marginBottom: '12px' }}>👥 Team</h2>
+      <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+        {['Alice', 'Bob', 'Carol'].map((name, i) => (
+          <div key={name} style={{
+            display: 'flex', alignItems: 'center', gap: '12px',
+            background: ['linear-gradient(135deg,#064e3b,#065f46)', 'linear-gradient(135deg,#1e1b4b,#312e81)', 'linear-gradient(135deg,#0c4a6e,#075985)'][i],
+            borderRadius: '12px', padding: '14px 18px', color: '#fff',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.2)', minWidth: '150px'
+          }}>
             <RandomAvatar seed={name} />
-            <span>{name}</span>
+            <div>
+              <div style={{ fontWeight: 700 }}>{name}</div>
+              <div style={{ fontSize: '12px', opacity: 0.75 }}>UVT Team</div>
+            </div>
           </div>
         ))}
       </div>
-      <img src="https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&w=400&q=80" alt="About" style={{ width: '300px', borderRadius: '8px', marginTop: '16px' }} />
+      <img src="https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&w=600&q=80" alt="About" style={{ width: '100%', maxWidth: '500px', borderRadius: '16px', marginTop: '24px', boxShadow: '0 8px 32px rgba(0,0,0,0.2)' }} />
     </div>
   );
 }
+
 
 function Blog() {
   const posts = [
