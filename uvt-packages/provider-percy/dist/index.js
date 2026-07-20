@@ -97,9 +97,10 @@ class PercyProvider {
         if (!this.percyRunning) {
             shared_1.logger.warn(`Skipping upload to Percy for "${name}" (Percy agent is not running).`);
             // Capture a local screenshot as fallback so the report still shows latest images!
+            const safeName = name.replace(/[^a-zA-Z0-9_-]/g, '_');
             const screenshotDir = require('path').join(process.cwd(), '.uvt', 'screenshots', 'latest');
             require('fs').mkdirSync(screenshotDir, { recursive: true });
-            const fallbackPath = require('path').join(screenshotDir, `${name}.png`);
+            const fallbackPath = require('path').join(screenshotDir, `${safeName}.png`);
             await page.screenshot({ path: fallbackPath, fullPage: true });
             if (route) {
                 route.metadata = route.metadata || {};
@@ -206,19 +207,40 @@ class PercyProvider {
             }, 500);
         });
     }
-    checkPercyAgent() {
+    async checkPercyAgent() {
+        const addressesToTry = [];
+        if (process.env.PERCY_SERVER_ADDRESS) {
+            addressesToTry.push(process.env.PERCY_SERVER_ADDRESS);
+        }
+        addressesToTry.push('http://127.0.0.1:5338');
+        addressesToTry.push('http://localhost:5338');
+        for (const addr of addressesToTry) {
+            try {
+                const url = new URL('/percy/healthcheck', addr);
+                const ok = await this.pingHealthcheck(url.hostname, url.port ? parseInt(url.port, 10) : 5338);
+                if (ok)
+                    return true;
+            }
+            catch (e) { }
+        }
+        // Heuristic fallback: If PERCY_SERVER_ADDRESS env var is set by percy exec wrapper, agent is active
+        if (process.env.PERCY_SERVER_ADDRESS && process.env.PERCY_TOKEN) {
+            shared_1.logger.info(`PERCY_SERVER_ADDRESS env var detected (${process.env.PERCY_SERVER_ADDRESS}). Percy agent active.`);
+            return true;
+        }
+        return false;
+    }
+    pingHealthcheck(host, port) {
         return new Promise((resolve) => {
             const req = http.request({
-                host: '127.0.0.1',
-                port: 5338,
+                host,
+                port,
                 path: '/percy/healthcheck',
                 method: 'GET',
                 timeout: 1000
             }, (res) => {
                 let data = '';
-                res.on('data', (chunk) => {
-                    data += chunk;
-                });
+                res.on('data', (chunk) => { data += chunk; });
                 res.on('end', () => {
                     try {
                         const json = JSON.parse(data);
@@ -229,13 +251,8 @@ class PercyProvider {
                     }
                 });
             });
-            req.on('error', () => {
-                resolve(false);
-            });
-            req.on('timeout', () => {
-                req.destroy();
-                resolve(false);
-            });
+            req.on('error', () => resolve(false));
+            req.on('timeout', () => { req.destroy(); resolve(false); });
             req.end();
         });
     }

@@ -22,5 +22,6 @@ export declare class PercyProvider implements VisualProvider {
     private stopPercyAgent;
     private startPercyAgent;
     private checkPercyAgent;
+    private pingHealthcheck;
 }
 //# sourceMappingURL=index.d.ts.map
