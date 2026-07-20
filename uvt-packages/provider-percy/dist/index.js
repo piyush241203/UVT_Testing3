@@ -139,7 +139,7 @@ class PercyProvider {
                     try {
                         const isWin = process.platform === 'win32';
                         const cmd = isWin ? 'npx.cmd' : 'npx';
-                        require('child_process').execSync(`${cmd} percy exec:stop`, { stdio: 'ignore' });
+                        require('child_process').execSync(`${cmd} percy stop`, { stdio: 'ignore' });
                         shared_1.logger.success('Percy build finalized via command line.');
                     }
                     catch (e) {
@@ -185,7 +185,7 @@ class PercyProvider {
                 fs.mkdirSync(uvtDir, { recursive: true });
             }
             const logFd = fs.openSync(path.join(uvtDir, 'percy.log'), 'a');
-            const child = require('child_process').spawn(cmd, ['--yes', 'percy', 'exec:start'], {
+            const child = require('child_process').spawn(cmd, ['--yes', 'percy', 'start'], {
                 detached: !isWin,
                 stdio: ['ignore', logFd, logFd],
                 env: process.env,

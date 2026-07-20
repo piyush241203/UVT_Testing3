@@ -1,9 +1,9 @@
 node_modules/
-dist/
-build/
-.svelte-kit/
-.next/
-.nuxt/
+/dist/
+/build/
+/.svelte-kit/
+/.next/
+/.nuxt/
 .uvt/
 tests/generated/
 *.local
