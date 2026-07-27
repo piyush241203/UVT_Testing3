@@ -1,0 +1,1 @@
+{"version":3,"file":"downloader.d.ts","sourceRoot":"","sources":["../src/downloader.ts"],"names":[],"mappings":"AAGA,OAAO,EAAE,gBAAgB,EAAE,MAAM,eAAe,CAAC;AACjD,OAAO,EAAE,SAAS,EAAE,MAAM,YAAY,CAAC;AAEvC,qBAAa,cAAc;IACzB,OAAO,CAAC,KAAK,CAAY;gBAEb,KAAK,GAAE,SAA2B;IAIjC,iBAAiB,CAAC,IAAI,EAAE,gBAAgB,GAAG,OAAO,CAAC,MAAM,CAAC;IAgCvE,OAAO,CAAC,2BAA2B;CAuBpC"}

@@ -226,7 +226,10 @@ function Layout({ children }: { children: React.ReactNode }) {
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <button onClick={() => setSidebarOpen(v => !v)} style={{ background: 'linear-gradient(135deg, #7c3aed, #a855f7)', color: '#fff', border: 'none', borderRadius: '10px', padding: '8px 14px', cursor: 'pointer', fontSize: '16px', boxShadow: '0 4px 12px rgba(124,58,237,0.4)', fontWeight: '600' }}>☰ Menu</button>
-          <h2 style={{ margin: 0, background: 'linear-gradient(135deg, #a78bfa, #34d399)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontWeight: '800', letterSpacing: '-0.5px', fontSize: '20px' }}>🚀 UVT React Demo v4.1 — New Percy Token Git CI Test ✅</h2>
+          <h2 style={{ margin: 0, background: 'linear-gradient(135deg, #a78bfa, #34d399)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontWeight: '800', letterSpacing: '-0.5px', fontSize: '20px' }}>🚀 UVT React Demo v5.1 — Certified ✨</h2>
+          <span style={{ padding: '4px 12px', borderRadius: '20px', background: 'linear-gradient(135deg, #10b981, #059669)', color: '#ffffff', fontSize: '12px', fontWeight: 'bold', boxShadow: '0 2px 8px rgba(16,185,129,0.4)' }}>Certified v5.1</span>
+
+
 
 
 

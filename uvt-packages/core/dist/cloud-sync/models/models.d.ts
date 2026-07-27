@@ -14,4 +14,6 @@ export interface AuthContext {
     isAuthenticated: boolean;
     userId?: string;
 }
+export declare class CloudSyncToken {
+}
 //# sourceMappingURL=models.d.ts.map

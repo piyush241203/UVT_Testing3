@@ -14,9 +14,11 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.REPOSITORY_INTELLIGENCE_VERSION = void 0;
 __exportStar(require("./models/models.js"), exports);
 __exportStar(require("./cache/rie-cache.js"), exports);
 __exportStar(require("./dependency/parser.js"), exports);
 __exportStar(require("./engine/rie-engine.js"), exports);
 __exportStar(require("./diagnostics/rie-doctor.js"), exports);
+exports.REPOSITORY_INTELLIGENCE_VERSION = '1.0.0';
 //# sourceMappingURL=index.js.map

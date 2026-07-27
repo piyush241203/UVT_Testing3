@@ -46,4 +46,7 @@ export interface RepositoryScanResult {
     graph: CapabilityGraphNode[];
     signals: any[];
 }
+export declare const MODELS_SCHEMA_VERSION = "1.0.0";
+export declare class RIEModelToken {
+}
 //# sourceMappingURL=models.d.ts.map

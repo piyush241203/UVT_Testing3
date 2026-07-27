@@ -1,0 +1,1 @@
+{"version":3,"file":"analytics-overlay-plugin.js","sourceRoot":"","sources":["../../src/plugins/analytics-overlay-plugin.ts"],"names":[],"mappings":";;;AAAA,qDAAkD;AAIlD,MAAa,sBAAuB,SAAQ,+BAAc;IACxC,IAAI,GAAG,wBAAwB,CAAC;IAEhC,KAAK,CAAC,MAAM,CAAC,OAAoB;QAC/C,OAAO,CAAC,MAAM,EAAE,KAAK,EAAE,CAAC,+EAA+E,CAAC,CAAC;QACzG,OAAO,EAAE,CAAC;IACZ,CAAC;CACF;AAPD,wDAOC"}

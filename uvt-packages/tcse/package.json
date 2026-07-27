@@ -1,0 +1,19 @@
+{
+  "name": "@uvt/tcse",
+  "version": "0.1.0-alpha.1",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rimraf dist",
+    "test": "node --test dist/__tests__/tcse.test.js"
+  },
+  "dependencies": {
+    "@uvt/shared": "file:../shared"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.0",
+    "rimraf": "^5.0.7",
+    "typescript": "^5.5.4"
+  }
+}

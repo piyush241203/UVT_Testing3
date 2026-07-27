@@ -71,6 +71,16 @@ export interface VisualProvider {
     compare?(baseline: string, current: string): Promise<any>;
     finalize(): Promise<void>;
 }
+export interface TCSEPluginConfig {
+    enabled?: boolean;
+    mode?: 'hide' | 'placeholder' | 'blur' | 'mask' | 'ignore' | string;
+    confidenceThreshold?: number;
+    [key: string]: unknown;
+}
+export interface TCSEConfig {
+    enabled?: boolean;
+    plugins?: Record<string, TCSEPluginConfig>;
+}
 export interface UVTConfig {
     provider: string;
     framework: 'auto' | 'react' | 'next' | 'vue' | 'angular' | 'svelte' | string;
@@ -81,6 +91,7 @@ export interface UVTConfig {
         json?: boolean;
     };
     dynamicDetection?: boolean;
+    tcse?: TCSEConfig;
 }
 export interface RepositoryModel {
     framework: string;

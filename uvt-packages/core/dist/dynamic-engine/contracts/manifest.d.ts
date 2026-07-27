@@ -15,4 +15,6 @@ export interface PluginManifest {
     readonly priority: number;
     readonly license?: string;
 }
+export declare class ManifestToken {
+}
 //# sourceMappingURL=manifest.d.ts.map

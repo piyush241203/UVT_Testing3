@@ -1,0 +1,1 @@
+{"version":3,"file":"social-embed-plugin.js","sourceRoot":"","sources":["../../src/plugins/social-embed-plugin.ts"],"names":[],"mappings":";;;AAAA,qDAAkD;AAIlD,MAAa,iBAAkB,SAAQ,+BAAc;IACnC,IAAI,GAAG,mBAAmB,CAAC;IAE3B,KAAK,CAAC,MAAM,CAAC,OAAoB;QAC/C,OAAO,CAAC,MAAM,EAAE,KAAK,EAAE,CAAC,0EAA0E,CAAC,CAAC;QACpG,OAAO,EAAE,CAAC;IACZ,CAAC;CACF;AAPD,8CAOC"}

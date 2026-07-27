@@ -1,0 +1,1 @@
+{"version":3,"file":"fault-injector.d.ts","sourceRoot":"","sources":["../../src/faults/fault-injector.ts"],"names":[],"mappings":"AAEA,OAAO,EAAE,eAAe,EAAE,MAAM,mBAAmB,CAAC;AAEpD,qBAAa,aAAa;WACV,WAAW,CAAC,SAAS,EAAE,MAAM,EAAE,EAAE,EAAE,eAAe,GAAG,IAAI;CAyDxE"}

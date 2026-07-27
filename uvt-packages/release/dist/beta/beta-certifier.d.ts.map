@@ -1,0 +1,1 @@
+{"version":3,"file":"beta-certifier.d.ts","sourceRoot":"","sources":["../../src/beta/beta-certifier.ts"],"names":[],"mappings":"AAEA,OAAO,EAEL,mBAAmB,EAKpB,MAAM,kBAAkB,CAAC;AAE1B,qBAAa,mBAAmB;IAC9B,OAAO,CAAC,GAAG,CAAS;gBAER,GAAG,GAAE,MAAsB;IAI1B,wBAAwB,CAAC,WAAW,GAAE,MAA+B,GAAG,OAAO,CAAC,mBAAmB,CAAC;CA+JlH"}

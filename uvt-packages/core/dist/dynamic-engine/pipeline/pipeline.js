@@ -165,14 +165,35 @@ class PipelineEngine {
                 this.publishOutput('visual-region', 'RegionGraph');
             }
         });
+        // 9.5 Third-Party Content Stabilization Engine (TCSE)
+        this.registerStage({
+            id: 'third-party-stabilization',
+            name: 'Third-Party Content Stabilization Engine',
+            version: '1.0.0',
+            priority: 9.5,
+            dependsOn: ['visual-region'],
+            execute: async (ctx) => {
+                const { TCSEEngine } = await import('@uvt/tcse');
+                const tcseEngine = new TCSEEngine();
+                const processResult = await tcseEngine.process({
+                    page: ctx.page,
+                    config: ctx.config,
+                    logger: ctx.logger,
+                    url: ctx.page?.url?.()
+                });
+                ctx.setMetadata('TCSEResult', processResult);
+                this.publishOutput('third-party-stabilization', 'TCSEResult');
+            }
+        });
         // 10. Dynamic Decision Engine
         this.registerStage({
             id: 'dynamic-decision',
             name: 'Dynamic Decision Engine',
             version: '1.0.0',
             priority: 10,
-            dependsOn: ['visual-region', 'ast-intelligence', 'network-intelligence'],
+            dependsOn: ['third-party-stabilization', 'visual-region', 'ast-intelligence', 'network-intelligence'],
             execute: async (ctx) => {
+                this.consumeOutput('TCSEResult');
                 this.consumeOutput('RegionGraph');
                 this.consumeOutput('ASTSignals');
                 this.consumeOutput('NetworkSignals');

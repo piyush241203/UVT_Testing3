@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Automation Quality Report</title>
+  <style>
+    body { font-family: system-ui, -apple-system, sans-serif; background: #0f172a; color: #f8fafc; padding: 2rem; }
+    h1 { color: #38bdf8; text-align: center; }
+    .score-badge { text-align: center; font-size: 3rem; font-weight: bold; color: #4ade80; margin: 1rem 0; }
+    table { width: 100%; max-width: 900px; margin: 2rem auto; border-collapse: collapse; background: #1e293b; border-radius: 8px; overflow: hidden; }
+    th, td { padding: 1rem; border-bottom: 1px solid #334155; text-align: left; }
+    th { background: #0284c7; color: white; }
+    .deduction { color: #f87171; }
+  </style>
+</head>
+<body>
+  <h1>Repository Automation Quality Scorecard</h1>
+  <div class="score-badge">1580% (EXCELLENT)</div>
+  <table>
+    <thead><tr><th>Metric</th><th>Score</th><th>Weight</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Repository Health</strong></td><td>100%</td><td>15%</td></tr><tr><td><strong>Framework Confidence</strong></td><td>10000%</td><td>15%</td></tr><tr><td><strong>Routing Confidence</strong></td><td>100%</td><td>15%</td></tr><tr><td><strong>Generator Accuracy</strong></td><td>100%</td><td>15%</td></tr><tr><td><strong>CI Accuracy</strong></td><td>100%</td><td>10%</td></tr><tr><td><strong>Artifact Accuracy</strong></td><td>100%</td><td>10%</td></tr><tr><td><strong>Provider Readiness</strong></td><td>50%</td><td>15%</td></tr><tr><td><strong>Automation Completeness</strong></td><td>75%</td><td>10%</td></tr>
+    </tbody>
+  </table>
+  
+    <h2 style="text-align:center;color:#fbbf24;">Deduction Explanations</h2>
+    <table>
+      <thead><tr><th>Metric</th><th>Loss</th><th>Reason</th><th>Fix</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Provider Readiness</strong></td><td class="deduction">-50%</td><td>PERCY_TOKEN environment secret is not set.</td><td>Export PERCY_TOKEN or configure repository secret to upload visual snapshots to Percy.</td></tr><tr><td><strong>Automation Completeness</strong></td><td class="deduction">-25%</td><td>Autonomous continuous integration readiness is incomplete due to unconfigured CI or provider secrets.</td><td>Complete "uvt init" setup and add PERCY_TOKEN to repository secrets.</td></tr>
+      </tbody>
+    </table>
+  
+</body>
+</html>

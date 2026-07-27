@@ -1,0 +1,1 @@
+{"version":3,"file":"newsletter-popup-plugin.js","sourceRoot":"","sources":["../../src/plugins/newsletter-popup-plugin.ts"],"names":[],"mappings":";;;AAAA,qDAAkD;AAIlD,MAAa,qBAAsB,SAAQ,+BAAc;IACvC,IAAI,GAAG,uBAAuB,CAAC;IAE/B,KAAK,CAAC,MAAM,CAAC,OAAoB;QAC/C,OAAO,CAAC,MAAM,EAAE,KAAK,EAAE,CAAC,8EAA8E,CAAC,CAAC;QACxG,OAAO,EAAE,CAAC;IACZ,CAAC;CACF;AAPD,sDAOC"}

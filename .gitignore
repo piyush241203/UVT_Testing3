@@ -15,3 +15,5 @@ tests/generated/
 !uvt-packages/**/dist/
 !uvt-packages/**/dist/**
 uvt-packages/**/node_modules/
+/.uvt/
+/tests/generated/

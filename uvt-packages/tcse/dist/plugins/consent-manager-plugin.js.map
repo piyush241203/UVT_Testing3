@@ -1,0 +1,1 @@
+{"version":3,"file":"consent-manager-plugin.js","sourceRoot":"","sources":["../../src/plugins/consent-manager-plugin.ts"],"names":[],"mappings":";;;AAAA,qDAAkD;AAIlD,MAAa,oBAAqB,SAAQ,+BAAc;IACtC,IAAI,GAAG,sBAAsB,CAAC;IAE9B,KAAK,CAAC,MAAM,CAAC,OAAoB;QAC/C,OAAO,CAAC,MAAM,EAAE,KAAK,EAAE,CAAC,6EAA6E,CAAC,CAAC;QACvG,OAAO,EAAE,CAAC;IACZ,CAAC;CACF;AAPD,oDAOC"}

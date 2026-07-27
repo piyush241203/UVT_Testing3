@@ -2,7 +2,7 @@
   "name": "@uvt/cli",
   "version": "0.1.0-alpha.1",
   "bin": {
-    "uvt": "./dist/bin.js"
+    "uvt": "./dist/index.js"
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -19,6 +19,8 @@
     "@uvt/sdk": "file:../sdk",
     "@uvt/release": "file:../release",
     "@uvt/docs": "file:../docs",
+    "@uvt/certification": "file:../certification",
+    "@uvt/benchmark": "file:../benchmark",
     "commander": "^12.1.0",
     "picocolors": "^1.0.1"
   },

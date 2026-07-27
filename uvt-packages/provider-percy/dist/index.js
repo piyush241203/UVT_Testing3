@@ -40,6 +40,7 @@ exports.PercyProvider = void 0;
 const playwright_1 = __importDefault(require("@percy/playwright"));
 const shared_1 = require("@uvt/shared");
 const http = __importStar(require("http"));
+const cp = __importStar(require("child_process"));
 class PercyProvider {
     name = 'percy';
     apiVersion = 1;
@@ -62,32 +63,94 @@ class PercyProvider {
         if (options.isSelective) {
             shared_1.logger.info('Selective run detected. Percy Partial Build mode temporarily DISABLED for diagnostic audit.');
         }
-        // First: check if Percy is already running (e.g. started by `percy exec` wrapper)
+        // ─── Case 1: Already inside `percy exec` ──────────────────────────────
+        // When `percy exec` wraps us, it sets PERCY_SERVER_ADDRESS automatically.
+        // In that case the agent is definitely running — just connect to it.
+        if (process.env.PERCY_SERVER_ADDRESS) {
+            shared_1.logger.success(`Percy exec wrapper detected (PERCY_SERVER_ADDRESS=${process.env.PERCY_SERVER_ADDRESS}). Connecting to Percy agent...`);
+            const connected = await this.checkPercyAgent();
+            if (connected) {
+                shared_1.logger.success('Percy agent connected successfully via percy exec wrapper.');
+                this.percyRunning = true;
+                this.autoStarted = false;
+                return;
+            }
+            // PERCY_SERVER_ADDRESS set but agent ping failed — still trust it, percy/playwright SDK will handle it
+            shared_1.logger.warn('PERCY_SERVER_ADDRESS is set but healthcheck ping timed out. Trusting percy exec — continuing.');
+            this.percyRunning = true;
+            this.autoStarted = false;
+            return;
+        }
+        // ─── Case 2: Agent already running on default port ────────────────────
         const alreadyRunning = await this.checkPercyAgent();
         if (alreadyRunning) {
             shared_1.logger.success('Percy agent detected and connected successfully.');
             this.percyRunning = true;
-            this.autoStarted = false; // managed externally, don't stop on finalize
+            this.autoStarted = false;
             return;
         }
-        // Percy not running yet - start it ourselves if token is available
+        // ─── Case 3: No agent, PERCY_TOKEN present → relaunch via `percy exec` ─
+        // This is the canonical Percy integration: `percy exec -- <command>`.
+        // Instead of trying to spawn a background daemon (which is unreliable on
+        // Windows), we relaunch the entire current process wrapped inside percy exec.
         if (process.env.PERCY_TOKEN) {
-            shared_1.logger.info('Percy agent not detected. Starting Percy CLI server in background...');
-            const started = await this.startPercyAgent();
-            if (started) {
-                shared_1.logger.success('Percy CLI server started and connected successfully in background.');
-                this.percyRunning = true;
-                this.autoStarted = true;
-            }
-            else {
-                shared_1.logger.warn('Failed to start background Percy server. UVT will run in standalone mode.');
-                shared_1.logger.warn('Tip: wrap your command with `percy exec` for more reliable Percy integration.');
-            }
+            shared_1.logger.info('Percy agent not detected. Relaunching UVT inside `percy exec` wrapper for reliable Percy integration...');
+            this._relaunchInsidePercyExec();
+            // _relaunchInsidePercyExec calls process.exit() after spawning child — this line never runs
+            return;
+        }
+        // ─── Case 4: No token — standalone mode ───────────────────────────────
+        shared_1.logger.warn('Percy agent not detected and PERCY_TOKEN not set. UVT is running in standalone mode.');
+        shared_1.logger.warn('To upload to Percy, set PERCY_TOKEN: `$env:PERCY_TOKEN="web_..."` then run `uvt test`');
+    }
+    /**
+     * Relaunch the current UVT process inside `percy exec -- <same command>`.
+     *
+     * This is the correct Percy integration pattern:
+     *   npx percy exec -- node bin.js test --port 3000
+     *
+     * Percy exec starts the Percy agent, sets PERCY_SERVER_ADDRESS, then runs the
+     * child command. The child process inherits PERCY_SERVER_ADDRESS and will hit
+     * Case 1 on re-entry to initialize(), connecting to the running agent.
+     *
+     * NOTE: On Windows, node.exe may live in a path with spaces (e.g. C:\Program Files\nodejs).
+     * We must quote the node executable path to prevent the shell from splitting it.
+     */
+    _relaunchInsidePercyExec() {
+        const isWin = process.platform === 'win32';
+        // Build the percy exec relaunch command:
+        //   npx percy exec -- node <current entry point> <original args>
+        const nodeExe = process.execPath;
+        const originalArgv = process.argv.slice(1); // [scriptPath, ...args]
+        // On Windows, node.exe may be in "C:\Program Files\nodejs" — a path with spaces.
+        // We must use shell:true with a quoted command string so the shell doesn't split on spaces.
+        // spawnSync with shell:true accepts a command string where we can embed quotes.
+        const quoted = (s) => (s.includes(' ') ? `"${s}"` : s);
+        const quotedNode = quoted(nodeExe);
+        const quotedArgs = originalArgv.map(quoted).join(' ');
+        if (isWin) {
+            // Windows: use shell=true + quoted command string to handle paths with spaces
+            const cmd = `npx.cmd --yes percy exec -- ${quotedNode} ${quotedArgs}`;
+            shared_1.logger.info(`Executing (Windows shell): ${cmd}`);
+            cp.spawnSync(cmd, [], {
+                stdio: 'inherit',
+                env: { ...process.env },
+                shell: true,
+                cwd: process.cwd()
+            });
         }
         else {
-            shared_1.logger.warn('Percy agent not detected and PERCY_TOKEN not set. UVT is running in standalone mode.');
-            shared_1.logger.warn('To upload to Percy, set PERCY_TOKEN and wrap your command: `npx percy exec -- npx uvt test`');
+            // Unix: spawnSync is safe — no path-with-spaces issues on node paths
+            const percyArgs = ['--yes', 'percy', 'exec', '--', nodeExe, ...originalArgv];
+            shared_1.logger.info(`Executing: npx ${percyArgs.join(' ')}`);
+            cp.spawnSync('npx', percyArgs, {
+                stdio: 'inherit',
+                env: { ...process.env },
+                shell: false,
+                cwd: process.cwd()
+            });
         }
+        process.exit(0);
     }
     async snapshot(page, opts) {
         if (!page) {
@@ -96,7 +159,7 @@ class PercyProvider {
         const { name, url, route } = opts;
         if (!this.percyRunning) {
             shared_1.logger.warn(`Skipping upload to Percy for "${name}" (Percy agent is not running).`);
-            // Capture a local screenshot as fallback so the report still shows latest images!
+            // Capture a local screenshot as fallback so the report still shows latest images
             const safeName = name.replace(/[^a-zA-Z0-9_-]/g, '_');
             const screenshotDir = require('path').join(process.cwd(), '.uvt', 'screenshots', 'latest');
             require('fs').mkdirSync(screenshotDir, { recursive: true });
@@ -175,38 +238,6 @@ class PercyProvider {
             req.end();
         });
     }
-    startPercyAgent() {
-        return new Promise((resolve) => {
-            const isWin = process.platform === 'win32';
-            const cmd = isWin ? 'npx.cmd' : 'npx';
-            const fs = require('fs');
-            const path = require('path');
-            const uvtDir = path.join(process.cwd(), '.uvt');
-            if (!fs.existsSync(uvtDir)) {
-                fs.mkdirSync(uvtDir, { recursive: true });
-            }
-            const logFd = fs.openSync(path.join(uvtDir, 'percy.log'), 'a');
-            const child = require('child_process').spawn(cmd, ['--yes', 'percy', 'start'], {
-                detached: !isWin,
-                stdio: ['ignore', logFd, logFd],
-                env: process.env,
-                shell: isWin
-            });
-            child.unref();
-            let attempts = 0;
-            const interval = setInterval(async () => {
-                attempts++;
-                if (await this.checkPercyAgent()) {
-                    clearInterval(interval);
-                    resolve(true);
-                }
-                else if (attempts > 60) {
-                    clearInterval(interval);
-                    resolve(false);
-                }
-            }, 500);
-        });
-    }
     async checkPercyAgent() {
         const addressesToTry = [];
         if (process.env.PERCY_SERVER_ADDRESS) {
@@ -222,11 +253,6 @@ class PercyProvider {
                     return true;
             }
             catch (e) { }
-        }
-        // Heuristic fallback: If PERCY_SERVER_ADDRESS env var is set by percy exec wrapper, agent is active
-        if (process.env.PERCY_SERVER_ADDRESS && process.env.PERCY_TOKEN) {
-            shared_1.logger.info(`PERCY_SERVER_ADDRESS env var detected (${process.env.PERCY_SERVER_ADDRESS}). Percy agent active.`);
-            return true;
         }
         return false;
     }

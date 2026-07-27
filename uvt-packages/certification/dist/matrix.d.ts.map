@@ -1,0 +1,1 @@
+{"version":3,"file":"matrix.d.ts","sourceRoot":"","sources":["../src/matrix.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,yBAAyB,EAAE,MAAM,eAAe,CAAC;AAE1D,qBAAa,mBAAmB;IACvB,sBAAsB,CAAC,OAAO,EAAE,yBAAyB,GAAG,MAAM;CAkB1E"}

@@ -28,6 +28,27 @@ class DynamicOrchestrator {
         const readyResult = await vre.checkReadiness(this.context.page);
         this.context.logger.info(`VRE result: ${readyResult.ready} (${readyResult.reason}) - Duration: ${readyResult.duration}ms`);
         this.context.runtimeMetadata.set('readiness', readyResult);
+        // 1.8 Third-Party Content Stabilization Engine (TCSE)
+        try {
+            const { TCSEEngine } = await import('@uvt/tcse');
+            const tcseEngine = new TCSEEngine();
+            const tcseResult = await tcseEngine.process({
+                page: this.context.page,
+                config: this.context.config,
+                logger: this.context.logger,
+                url
+            });
+            if (tcseResult.isZeroOp) {
+                this.context.logger.debug('TCSE result: zero-op pass-through (0 plugins).');
+            }
+            else {
+                this.context.logger.info(`TCSE result: ${tcseResult.signals.length} signals, ${tcseResult.decisions.length} decisions - Duration: ${tcseResult.durationMs}ms`);
+            }
+            this.context.runtimeMetadata.set('tcse', tcseResult);
+        }
+        catch (err) {
+            this.context.logger.debug(`TCSE stage pass-through fallback: ${err.message}`);
+        }
         // 2. Stabilization
         await this.pipeline.executeStabilizers(signals);
         // 3. Snapshot Execution

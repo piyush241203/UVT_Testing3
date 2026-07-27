@@ -34,4 +34,6 @@ export interface Baseline {
     status: ApprovalState;
     createdAt: string;
 }
+export declare class BuildManagementToken {
+}
 //# sourceMappingURL=models.d.ts.map

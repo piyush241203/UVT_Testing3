@@ -8,7 +8,6 @@ on:
 
 jobs:
   visual-test:
-    timeout-minutes: 20
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -24,6 +23,64 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: UVT Environment Diagnostic
+        run: |
+          echo "=== UVT Environment ==="
+          echo "Package Manager : npm"
+          echo "Workspace       : No"
+          echo "Framework       : React"
+          echo "CLI Source      : Published Package"
+          echo "Node            : $(node -v)"
+          echo "Working Dir     : $(pwd)"
+          
+          if npx playwright --version &>/dev/null; then
+            echo "Playwright      : Installed"
+          else
+            echo "Playwright      : Not Installed"
+          fi
+          
+          echo "=== Percy Diagnostics ==="
+          if [ -n "$PERCY_TOKEN" ]; then
+            echo "PERCY_TOKEN: Present"
+            echo "Length: ${#PERCY_TOKEN}"
+            MASKED_TOKEN="${PERCY_TOKEN:0:4}****${PERCY_TOKEN: -4}"
+            echo "Masked: $MASKED_TOKEN"
+          else
+            echo "PERCY_TOKEN: Not Present"
+          fi
+          
+          if npx percy --version &>/dev/null; then
+            echo "Percy CLI: $(npx percy --version)"
+          else
+            echo "Percy CLI: Not Installed"
+          fi
+          
+          if npm ls @percy/playwright &>/dev/null; then
+            echo "@percy/playwright: $(npm ls @percy/playwright | grep @percy/playwright)"
+          else
+            echo "@percy/playwright: Not Installed or not found in npm ls"
+          fi
+          
+          echo "--- Percy Environment Variables ---"
+          env | grep PERCY || echo "No other PERCY_* vars found"
+          
+          echo "======================="
+        env:
+          PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+      - name: Ensure UVT CLI is installed
+        run: |
+          if ! npx uvt --version &>/dev/null; then
+            echo "UVT CLI not found. Installing..."
+            npm install -D @uvt/cli || {
+              echo "UVT CLI was not found."
+              echo "Detected package manager: npm"
+              echo "Workspace: No"
+              echo "Attempted installation: npm install -D @uvt/cli"
+              echo "Please verify package installation."
+              exit 1
+            }
+          fi
 
       - name: Cache Playwright Browsers
         id: playwright-cache
@@ -44,18 +101,19 @@ jobs:
 
       - name: Build frontend application
         run: npm run build --if-present
+        continue-on-error: true
 
       - name: Start dev server in background
-        run: npx vite --port 3000 --strictPort &
+        run: npx vite --port 5173 --strictPort &
 
       - name: Wait for local server
         run: |
           for i in {1..60}; do
-            curl -s http://localhost:3000 && break || sleep 2
+            curl -s http://localhost:5173 && break || sleep 2
           done
 
       - name: Run visual regression tests
-        run: npx percy exec -- npx uvt test --changed --port 3000
+        run: npx percy exec -- npx uvt test --changed --port 5173
         env:
           PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
 

@@ -1,4 +1,4 @@
-import { RepositoryScanResult, ProjectType, ServerModel } from '../repository-intelligence/models/models.js';
+import type { RepositoryScanResult, ProjectType, ServerModel } from '../repository-intelligence/models/models.js';
 export interface FrameworkCapability {
     name: string;
     confidence: number;

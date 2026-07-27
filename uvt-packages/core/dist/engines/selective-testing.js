@@ -38,7 +38,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getAffectedRoutes = getAffectedRoutes;
 const simple_git_1 = __importDefault(require("simple-git"));
-const madge_1 = __importDefault(require("madge"));
 const path = __importStar(require("path"));
 const fs = __importStar(require("fs"));
 const shared_1 = require("@uvt/shared");
@@ -152,8 +151,20 @@ async function getAffectedRoutes(cwd, routes) {
     let graph = {};
     try {
         // Madge will build the dependency tree of JS/TS/JSX/TSX files
-        const madgeResult = await (0, madge_1.default)(srcDir, {
-            fileExtensions: ['js', 'jsx', 'ts', 'tsx'],
+        let madgeFn;
+        try {
+            madgeFn = require('madge');
+        }
+        catch {
+            // If madge is missing or not bundled in local node_modules, fallback gracefully
+            shared_1.logger.warn('Madge dependency not found. Defaulting to full route set.');
+            return { affectedRoutes: routes, changedFiles };
+        }
+        if (typeof madgeFn !== 'function' && madgeFn.default) {
+            madgeFn = madgeFn.default;
+        }
+        const madgeResult = await madgeFn(srcDir, {
+            fileExtensions: ['js', 'jsx', 'ts', 'tsx', 'vue', 'svelte', 'html', 'php'],
             includeNpm: false,
             excludeRegExp: [/node_modules/, /vendor/, /dist/, /\.git/]
         });

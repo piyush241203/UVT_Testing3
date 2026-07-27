@@ -1,0 +1,23 @@
+{
+  "name": "@uvt/benchmark",
+  "version": "0.1.0-alpha.1",
+  "description": "Subsystem Performance Certification Engine and Regression Dashboard for UVT",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "node --test dist/__tests__/benchmark.test.js"
+  },
+  "dependencies": {
+    "@uvt/shared": "file:../shared",
+    "@uvt/config": "file:../config",
+    "@uvt/core": "file:../core",
+    "@uvt/tcse": "file:../tcse",
+    "@uvt/quality": "file:../quality",
+    "@uvt/artifact-validator": "file:../artifact-validator"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.3.3"
+  }
+}

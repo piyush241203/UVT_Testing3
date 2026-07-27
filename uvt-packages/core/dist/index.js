@@ -36,7 +36,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CoreEngine = exports.pluginRegistry = exports.PluginRegistry = exports.SelfHealingGenerator = exports.ArtifactValidator = exports.ArtifactWriter = exports.GeneratorPlanner = exports.buildCapabilityGraph = exports.CGE = exports.CapabilityGraphBuilder = void 0;
+exports.CoreEngine = exports.pluginRegistry = exports.PluginRegistry = exports.SelfHealingGenerator = exports.ArtifactValidator = exports.ArtifactWriter = exports.GeneratorPlanner = exports.buildCapabilityGraph = exports.CGE = exports.CapabilityGraphBuilder = exports.CORE_PACKAGE_VERSION = exports.runSharedRuntimeTests = exports.runPipelineTests = exports.EventBus = exports.DSERegistry = exports.DynamicContext = exports.PipelineEngine = exports.UCSEngine = exports.UBMSEngine = exports.OnboardingEngine = exports.scanProject = exports.createRepoContext = void 0;
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
 const playwright_1 = require("playwright");
@@ -62,14 +62,33 @@ __exportStar(require("./onboarding/index.js"), exports);
 __exportStar(require("./build-management/index.js"), exports);
 __exportStar(require("./cloud-sync/index.js"), exports);
 __exportStar(require("./dynamic-engine/index.js"), exports);
+// export * from '@uvt/tcse';
+var repository_analyzer_js_2 = require("./engines/repository-analyzer.js");
+Object.defineProperty(exports, "createRepoContext", { enumerable: true, get: function () { return repository_analyzer_js_2.createRepoContext; } });
+var project_scanner_js_1 = require("./engines/project-scanner.js");
+Object.defineProperty(exports, "scanProject", { enumerable: true, get: function () { return project_scanner_js_1.scanProject; } });
+var engine_js_1 = require("./onboarding/engine/engine.js");
+Object.defineProperty(exports, "OnboardingEngine", { enumerable: true, get: function () { return engine_js_1.OnboardingEngine; } });
+var engine_js_2 = require("./build-management/engine/engine.js");
+Object.defineProperty(exports, "UBMSEngine", { enumerable: true, get: function () { return engine_js_2.UBMSEngine; } });
+var engine_js_3 = require("./cloud-sync/engine/engine.js");
+Object.defineProperty(exports, "UCSEngine", { enumerable: true, get: function () { return engine_js_3.UCSEngine; } });
+var index_js_1 = require("./dynamic-engine/index.js");
+Object.defineProperty(exports, "PipelineEngine", { enumerable: true, get: function () { return index_js_1.PipelineEngine; } });
+Object.defineProperty(exports, "DynamicContext", { enumerable: true, get: function () { return index_js_1.DynamicContext; } });
+Object.defineProperty(exports, "DSERegistry", { enumerable: true, get: function () { return index_js_1.DSERegistry; } });
+Object.defineProperty(exports, "EventBus", { enumerable: true, get: function () { return index_js_1.EventBus; } });
+Object.defineProperty(exports, "runPipelineTests", { enumerable: true, get: function () { return index_js_1.runPipelineTests; } });
+Object.defineProperty(exports, "runSharedRuntimeTests", { enumerable: true, get: function () { return index_js_1.runSharedRuntimeTests; } });
+exports.CORE_PACKAGE_VERSION = '0.1.0-alpha.1';
 // ==========================================
 // RC-04 URAE — Public API
 // ==========================================
 var capability_graph_js_1 = require("./capability-graph/capability-graph.js");
 Object.defineProperty(exports, "CapabilityGraphBuilder", { enumerable: true, get: function () { return capability_graph_js_1.CapabilityGraphBuilder; } });
 Object.defineProperty(exports, "CGE", { enumerable: true, get: function () { return capability_graph_js_1.CapabilityGraphBuilder; } });
-var repository_analyzer_js_2 = require("./engines/repository-analyzer.js");
-Object.defineProperty(exports, "buildCapabilityGraph", { enumerable: true, get: function () { return repository_analyzer_js_2.buildCapabilityGraph; } });
+var repository_analyzer_js_3 = require("./engines/repository-analyzer.js");
+Object.defineProperty(exports, "buildCapabilityGraph", { enumerable: true, get: function () { return repository_analyzer_js_3.buildCapabilityGraph; } });
 var generator_planner_js_1 = require("./generator/generator-planner.js");
 Object.defineProperty(exports, "GeneratorPlanner", { enumerable: true, get: function () { return generator_planner_js_1.GeneratorPlanner; } });
 var artifact_writer_js_1 = require("./generator/artifact-writer.js");
@@ -231,6 +250,27 @@ class CoreEngine {
                 // Setup Network Analyzer to capture response logs
                 const networkAnalyzer = new network_analyzer_js_1.NetworkAnalyzer();
                 networkAnalyzer.setup(page);
+                // Intercept .php downloads when running static/dev server without active PHP CGI
+                await page.route('**/*.php*', async (route, request) => {
+                    try {
+                        const response = await route.fetch();
+                        const headers = response.headers();
+                        if (headers['content-disposition'] || headers['content-type']?.includes('application/x-httpd-php') || !headers['content-type']?.includes('text/html')) {
+                            const body = await response.text();
+                            await route.fulfill({
+                                response,
+                                status: 200,
+                                contentType: 'text/html; charset=utf-8',
+                                body
+                            });
+                            return;
+                        }
+                        await route.continue();
+                    }
+                    catch {
+                        await route.continue();
+                    }
+                });
                 // Navigate - use 60s timeout for slow CI environments
                 await page.goto(fullUrl, { waitUntil: 'networkidle', timeout: 60000 });
                 // Extra stability wait: ensure DOM is fully loaded and JS has settled

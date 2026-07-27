@@ -84,18 +84,46 @@ class ArtifactWriter {
         // Write
         fs.writeFileSync(fullPath, artifact.content, 'utf-8');
         shared_1.logger.success(`Written: ${artifact.relativePath}`);
-        // Validate + heal if required
+        // Validate + heal if required (RC-07 Artifact Validation Engine 2.0)
         if (artifact.validate) {
-            const validation = await artifact_validator_js_1.ArtifactValidator.validate(fullPath);
-            if (!validation.valid) {
-                const report = await self_healing_generator_js_1.SelfHealingGenerator.heal(fullPath, validation.errors, graph);
-                return {
-                    path: fullPath,
-                    written: true,
-                    skipped: false,
-                    healed: report.healed,
-                    errors: report.finalErrors.map(e => e.message)
-                };
+            try {
+                let Validator2Module;
+                try {
+                    Validator2Module = await (Function('return import("@uvt/artifact-validator")')());
+                }
+                catch {
+                    Validator2Module = await (Function('return import("../../../artifact-validator/dist/index.js")')());
+                }
+                const engine2 = new Validator2Module.ArtifactValidationEngine2();
+                const kind = basename.includes('workflow') || basename.endsWith('.yml') ? 'github-workflow' :
+                    basename.includes('uvt.config') ? 'uvt-config' : 'package.json';
+                const v2Result = await engine2.validateArtifact(fullPath, kind, (targetPath) => {
+                    // Auto-regeneration callback
+                    fs.writeFileSync(targetPath, artifact.content, 'utf-8');
+                });
+                if (!v2Result.passed) {
+                    const report = await self_healing_generator_js_1.SelfHealingGenerator.heal(fullPath, v2Result.errors, graph);
+                    return {
+                        path: fullPath,
+                        written: true,
+                        skipped: false,
+                        healed: report.healed,
+                        errors: report.finalErrors.map(e => e.message)
+                    };
+                }
+            }
+            catch {
+                const validation = await artifact_validator_js_1.ArtifactValidator.validate(fullPath);
+                if (!validation.valid) {
+                    const report = await self_healing_generator_js_1.SelfHealingGenerator.heal(fullPath, validation.errors, graph);
+                    return {
+                        path: fullPath,
+                        written: true,
+                        skipped: false,
+                        healed: report.healed,
+                        errors: report.finalErrors.map(e => e.message)
+                    };
+                }
             }
         }
         return { path: fullPath, written: true, skipped: false, healed: false, errors: [] };

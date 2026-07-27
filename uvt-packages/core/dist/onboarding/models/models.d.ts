@@ -19,4 +19,6 @@ export interface OnboardingConfig {
     createMissingConfig: boolean;
     strictValidation: boolean;
 }
+export declare class OnboardingToken {
+}
 //# sourceMappingURL=models.d.ts.map

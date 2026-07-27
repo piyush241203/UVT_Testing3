@@ -37,4 +37,6 @@ export interface SnapshotProvider {
     capture(page: Page, options: Record<string, unknown>): Promise<void>;
     dispose(): Promise<void> | void;
 }
+export declare class DSEInterfaceToken {
+}
 //# sourceMappingURL=interfaces.d.ts.map

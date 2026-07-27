@@ -36,7 +36,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DEFAULT_CONFIG = exports.configSchema = void 0;
+exports.DEFAULT_CONFIG = exports.configSchema = exports.DEFAULT_TCSE_CONFIG = exports.tcseSchema = exports.tcsePluginSchema = void 0;
+exports.validateTCSEConfig = validateTCSEConfig;
 exports.loadConfig = loadConfig;
 const zod_1 = require("zod");
 const jiti_1 = __importDefault(require("jiti"));
@@ -46,6 +47,47 @@ const shared_1 = require("@uvt/shared");
 // ==========================================
 // Zod Schema Validation
 // ==========================================
+exports.tcsePluginSchema = zod_1.z.object({
+    enabled: zod_1.z.boolean().default(true),
+    mode: zod_1.z.string().default('placeholder'),
+    confidenceThreshold: zod_1.z.number().min(0).max(100).default(70)
+}).passthrough();
+exports.tcseSchema = zod_1.z.object({
+    enabled: zod_1.z.boolean().default(true),
+    plugins: zod_1.z.record(exports.tcsePluginSchema).default({
+        advertisement: {
+            enabled: true,
+            mode: 'placeholder',
+            confidenceThreshold: 70
+        }
+    })
+}).default({
+    enabled: true,
+    plugins: {
+        advertisement: {
+            enabled: true,
+            mode: 'placeholder',
+            confidenceThreshold: 70
+        }
+    }
+});
+exports.DEFAULT_TCSE_CONFIG = {
+    enabled: true,
+    plugins: {
+        advertisement: {
+            enabled: true,
+            mode: 'placeholder',
+            confidenceThreshold: 70
+        }
+    }
+};
+function validateTCSEConfig(input) {
+    const result = exports.tcseSchema.safeParse(input ?? exports.DEFAULT_TCSE_CONFIG);
+    if (result.success) {
+        return result.data;
+    }
+    return exports.DEFAULT_TCSE_CONFIG;
+}
 exports.configSchema = zod_1.z.object({
     provider: zod_1.z.string().default('playwright'),
     framework: zod_1.z.union([
@@ -65,13 +107,12 @@ exports.configSchema = zod_1.z.object({
         html: zod_1.z.boolean().default(true),
         json: zod_1.z.boolean().default(true)
     }).default({ html: true, json: true }),
-    dynamicDetection: zod_1.z.boolean().default(true)
+    dynamicDetection: zod_1.z.boolean().default(true),
+    tcse: exports.tcseSchema.optional()
 });
 // ==========================================
 // Default Configuration
 // ==========================================
-// Visual comparison service provider ("percy" or "playwright")
-// Add provider: 'playwright',if needed
 exports.DEFAULT_CONFIG = {
     provider: 'percy',
     framework: 'auto',
@@ -81,7 +122,8 @@ exports.DEFAULT_CONFIG = {
         html: true,
         json: true
     },
-    dynamicDetection: true
+    dynamicDetection: true,
+    tcse: exports.DEFAULT_TCSE_CONFIG
 };
 // ==========================================
 // Loader Function

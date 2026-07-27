@@ -1,0 +1,1 @@
+{"version":3,"file":"recommendation-widget-plugin.js","sourceRoot":"","sources":["../../src/plugins/recommendation-widget-plugin.ts"],"names":[],"mappings":";;;AAAA,qDAAkD;AAIlD,MAAa,0BAA2B,SAAQ,+BAAc;IAC5C,IAAI,GAAG,4BAA4B,CAAC;IAEpC,KAAK,CAAC,MAAM,CAAC,OAAoB;QAC/C,OAAO,CAAC,MAAM,EAAE,KAAK,EAAE,CAAC,mFAAmF,CAAC,CAAC;QAC7G,OAAO,EAAE,CAAC;IACZ,CAAC;CACF;AAPD,gEAOC"}

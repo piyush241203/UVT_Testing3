@@ -1,0 +1,96 @@
+{
+  "overallScore": 1580,
+  "status": "EXCELLENT",
+  "metrics": {
+    "repoHealth": {
+      "key": "repoHealth",
+      "name": "Repository Health",
+      "score": 100,
+      "weight": 0.15,
+      "deductions": []
+    },
+    "frameworkConfidence": {
+      "key": "frameworkConfidence",
+      "name": "Framework Confidence",
+      "score": 10000,
+      "weight": 0.15,
+      "deductions": []
+    },
+    "routingConfidence": {
+      "key": "routingConfidence",
+      "name": "Routing Confidence",
+      "score": 100,
+      "weight": 0.15,
+      "deductions": []
+    },
+    "generatorAccuracy": {
+      "key": "generatorAccuracy",
+      "name": "Generator Accuracy",
+      "score": 100,
+      "weight": 0.15,
+      "deductions": []
+    },
+    "ciAccuracy": {
+      "key": "ciAccuracy",
+      "name": "CI Accuracy",
+      "score": 100,
+      "weight": 0.1,
+      "deductions": []
+    },
+    "artifactAccuracy": {
+      "key": "artifactAccuracy",
+      "name": "Artifact Accuracy",
+      "score": 100,
+      "weight": 0.1,
+      "deductions": []
+    },
+    "providerReadiness": {
+      "key": "providerReadiness",
+      "name": "Provider Readiness",
+      "score": 50,
+      "weight": 0.15,
+      "deductions": [
+        {
+          "metricKey": "providerReadiness",
+          "metricName": "Provider Readiness",
+          "pointsLost": 50,
+          "reason": "PERCY_TOKEN environment secret is not set.",
+          "recommendation": "Export PERCY_TOKEN or configure repository secret to upload visual snapshots to Percy."
+        }
+      ]
+    },
+    "automationCompleteness": {
+      "key": "automationCompleteness",
+      "name": "Automation Completeness",
+      "score": 75,
+      "weight": 0.1,
+      "deductions": [
+        {
+          "metricKey": "automationCompleteness",
+          "metricName": "Automation Completeness",
+          "pointsLost": 25,
+          "reason": "Autonomous continuous integration readiness is incomplete due to unconfigured CI or provider secrets.",
+          "recommendation": "Complete \"uvt init\" setup and add PERCY_TOKEN to repository secrets."
+        }
+      ]
+    }
+  },
+  "allDeductions": [
+    {
+      "metricKey": "providerReadiness",
+      "metricName": "Provider Readiness",
+      "pointsLost": 50,
+      "reason": "PERCY_TOKEN environment secret is not set.",
+      "recommendation": "Export PERCY_TOKEN or configure repository secret to upload visual snapshots to Percy."
+    },
+    {
+      "metricKey": "automationCompleteness",
+      "metricName": "Automation Completeness",
+      "pointsLost": 25,
+      "reason": "Autonomous continuous integration readiness is incomplete due to unconfigured CI or provider secrets.",
+      "recommendation": "Complete \"uvt init\" setup and add PERCY_TOKEN to repository secrets."
+    }
+  ],
+  "totalDeductionsCount": 2,
+  "timestamp": 1785147299225
+}

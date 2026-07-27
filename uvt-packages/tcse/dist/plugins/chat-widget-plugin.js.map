@@ -1,0 +1,1 @@
+{"version":3,"file":"chat-widget-plugin.js","sourceRoot":"","sources":["../../src/plugins/chat-widget-plugin.ts"],"names":[],"mappings":";;;AAAA,qDAAkD;AAIlD,MAAa,gBAAiB,SAAQ,+BAAc;IAClC,IAAI,GAAG,kBAAkB,CAAC;IAE1B,KAAK,CAAC,MAAM,CAAC,OAAoB;QAC/C,OAAO,CAAC,MAAM,EAAE,KAAK,EAAE,CAAC,yEAAyE,CAAC,CAAC;QACnG,OAAO,EAAE,CAAC;IACZ,CAAC;CACF;AAPD,4CAOC"}

@@ -14,7 +14,12 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.RELEASE_PACKAGE_VERSION = void 0;
 __exportStar(require("./verify/gatekeeper.js"), exports);
 __exportStar(require("./changelog/generator.js"), exports);
 __exportStar(require("./publish/publisher.js"), exports);
+__exportStar(require("./beta/beta-models.js"), exports);
+__exportStar(require("./beta/beta-certifier.js"), exports);
+__exportStar(require("./beta/beta-reporter.js"), exports);
+exports.RELEASE_PACKAGE_VERSION = '0.1.0-alpha.1';
 //# sourceMappingURL=index.js.map

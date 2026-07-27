@@ -27,4 +27,6 @@ export interface DSEConfigurationSchema {
         };
     };
 }
+export declare class ConfigToken {
+}
 //# sourceMappingURL=configuration.d.ts.map

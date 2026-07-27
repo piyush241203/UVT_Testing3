@@ -159,7 +159,7 @@ export default defineConfig({
 `;
     }
     static generatePercyConfig(graph) {
-        const idleTimeout = graph.projectType.type === 'SPA' ? 750 : 1000;
+        const idleTimeout = 750;
         return `version: 2
 snapshot:
   widths:
@@ -289,9 +289,19 @@ ${buildStep}
           done
 
       - name: Run visual regression tests
-        run: ${runCliCmd} test --changed --port ${dev.port}
+        run: npx percy exec -- ${runCliCmd} test --changed --port ${dev.port}
         env:
           PERCY_TOKEN: \${{ secrets.PERCY_TOKEN }}
+
+      - name: Print Percy logs
+        if: always()
+        run: |
+          if [ -f .uvt/percy.log ]; then
+            echo "=== Percy CLI Logs ==="
+            cat .uvt/percy.log
+          else
+            echo "No Percy CLI logs found."
+          fi
 
       - name: Teardown background processes
         if: always()
