@@ -113,7 +113,7 @@ jobs:
           done
 
       - name: Run visual regression tests
-        run: npx uvt run
+        run: node uvt-packages/cli/dist/bin.js run
         env:
           PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
 
