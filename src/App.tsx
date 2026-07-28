@@ -171,6 +171,255 @@ function RandomAvatar({ seed }: { seed: string }) {
 }
 
 // =====================================================
+// ADVERTISEMENT SUITE — TCSE/ADE Certification Scenarios
+// Ads use TCSE-detectable patterns: IAB sizes, CSS heuristics,
+// ARIA labels, mutation observer markers. No UVT config modified.
+// =====================================================
+
+/** Leaderboard Banner — IAB 728×90, CSS heuristic: .ad-banner */
+function LeaderboardAd() {
+  return (
+    <div className="ad-banner" aria-label="Advertisement" role="complementary"
+      style={{
+        width: '728px', height: '90px', maxWidth: '100%',
+        background: 'linear-gradient(135deg, #f0fdf4, #dcfce7)',
+        border: '1px solid #86efac', borderRadius: '6px',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '0 20px', margin: '12px auto', boxSizing: 'border-box',
+        fontSize: '13px', color: '#166534', gap: '12px',
+        boxShadow: '0 2px 8px rgba(134,239,172,0.3)'
+      }}>
+      <span style={{ fontWeight: 700, fontSize: '15px' }}>🛒 Special Offer — Save 40% Today</span>
+      <span style={{ fontSize: '11px', color: '#4ade80', background: '#064e3b', padding: '4px 10px', borderRadius: '20px' }}>Sponsored</span>
+      <button style={{ padding: '8px 18px', background: '#16a34a', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}>Shop Now</button>
+      <span style={{ fontSize: '10px', color: '#9ca3af', marginLeft: 'auto' }}>Ad · Google</span>
+    </div>
+  );
+}
+
+/** Medium Rectangle — IAB 300×250, CSS heuristic: .sidebar-ad, .ad-unit */
+function MediumRectangleAd() {
+  return (
+    <div className="sidebar-ad ad-unit" aria-label="Advertisement" role="complementary"
+      style={{
+        width: '300px', height: '250px', background: 'linear-gradient(160deg, #eff6ff, #dbeafe)',
+        border: '1px solid #93c5fd', borderRadius: '8px', padding: '16px',
+        display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+        boxSizing: 'border-box', boxShadow: '0 4px 12px rgba(147,197,253,0.3)'
+      }}>
+      <div>
+        <div style={{ fontSize: '10px', color: '#6b7280', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px' }}>Sponsored</div>
+        <div style={{ fontWeight: 800, fontSize: '18px', color: '#1e40af', marginBottom: '6px' }}>Cloud Hosting</div>
+        <div style={{ fontSize: '13px', color: '#374151', lineHeight: 1.5 }}>Start at $5/month. Fast, scalable, and reliable infrastructure for developers.</div>
+      </div>
+      <div style={{ background: '#1d4ed8', color: '#fff', padding: '10px', borderRadius: '6px', textAlign: 'center', fontWeight: 600, cursor: 'pointer' }}>
+        Get Started Free →
+      </div>
+    </div>
+  );
+}
+
+/** Skyscraper — IAB 160×600, CSS heuristic: .sidebar-ad */
+function SkyscraperAd() {
+  return (
+    <div className="sidebar-ad" aria-label="Sponsored Advertisement"
+      style={{
+        width: '160px', height: '600px', background: 'linear-gradient(180deg, #faf5ff, #ede9fe)',
+        border: '1px solid #c4b5fd', borderRadius: '8px', padding: '14px',
+        display: 'flex', flexDirection: 'column', gap: '12px', boxSizing: 'border-box',
+        boxShadow: '0 4px 16px rgba(196,181,253,0.3)', flexShrink: 0
+      }}>
+      <div style={{ fontSize: '9px', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '1px' }}>Advertisement</div>
+      <div style={{ fontWeight: 800, fontSize: '14px', color: '#6d28d9', textAlign: 'center' }}>Premium SaaS Tools</div>
+      {['Analytics', 'Monitoring', 'Logging', 'Alerts', 'Reports'].map(item => (
+        <div key={item} style={{ background: '#7c3aed', color: '#fff', borderRadius: '6px', padding: '8px', textAlign: 'center', fontSize: '12px', fontWeight: 600 }}>{item}</div>
+      ))}
+      <div style={{ marginTop: 'auto', fontSize: '11px', color: '#6d28d9', fontWeight: 700, textAlign: 'center' }}>Try Free 14 Days</div>
+    </div>
+  );
+}
+
+/** Sponsored Card — CSS: .sponsored-content, .sponsored-card */
+function SponsoredCard({ title, brand, cta }: { title: string; brand: string; cta: string }) {
+  return (
+    <div className="sponsored-content sponsored-card" aria-label="Sponsored content"
+      style={{
+        border: '1px solid #e5e7eb', borderRadius: '10px', padding: '16px',
+        background: '#fff', boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+        display: 'flex', flexDirection: 'column', gap: '8px'
+      }}>
+      <div style={{ fontSize: '9px', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '1px' }}>Sponsored · {brand}</div>
+      <div style={{ fontWeight: 700, fontSize: '15px', color: '#111827' }}>{title}</div>
+      <button style={{ padding: '8px 14px', background: '#f59e0b', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 600, alignSelf: 'flex-start' }}>{cta}</button>
+    </div>
+  );
+}
+
+/** Cookie Banner — CookieBannerPlugin detects: .cookie-banner, #cookie-consent */
+function CookieBanner() {
+  const [visible, setVisible] = React.useState(true);
+  if (!visible) return null;
+  return (
+    <div id="cookie-consent" className="cookie-banner"
+      style={{
+        position: 'fixed', bottom: 0, left: 0, right: 0,
+        background: '#1f2937', color: '#f9fafb', padding: '16px 24px',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        zIndex: 10000, gap: '16px', flexWrap: 'wrap',
+        boxShadow: '0 -4px 16px rgba(0,0,0,0.3)'
+      }}>
+      <p style={{ margin: 0, fontSize: '13px', maxWidth: '600px' }}>
+        🍪 We use cookies to personalize ads and analyze traffic. By continuing you accept our <strong>Cookie Policy</strong>.
+      </p>
+      <div style={{ display: 'flex', gap: '8px' }}>
+        <button onClick={() => setVisible(false)} style={{ padding: '8px 18px', background: '#10b981', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}>Accept All</button>
+        <button onClick={() => setVisible(false)} style={{ padding: '8px 18px', background: 'transparent', color: '#9ca3af', border: '1px solid #4b5563', borderRadius: '6px', cursor: 'pointer' }}>Decline</button>
+      </div>
+    </div>
+  );
+}
+
+/** Newsletter Popup — NewsletterPlugin detects: .newsletter-popup */
+function NewsletterPopup() {
+  const [visible, setVisible] = React.useState(false);
+  React.useEffect(() => {
+    const t = setTimeout(() => setVisible(true), 3500);
+    return () => clearTimeout(t);
+  }, []);
+  if (!visible) return null;
+  return (
+    <div className="newsletter-popup" role="dialog" aria-label="Newsletter signup"
+      style={{
+        position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%,-50%)',
+        background: '#fff', borderRadius: '16px', padding: '32px', width: '380px',
+        boxShadow: '0 20px 60px rgba(0,0,0,0.25)', zIndex: 10001
+      }}>
+      <button onClick={() => setVisible(false)} style={{ position: 'absolute', top: '12px', right: '12px', background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer', color: '#9ca3af' }}>✕</button>
+      <h3 style={{ margin: '0 0 8px', fontSize: '22px', fontWeight: 800 }}>🎁 Get 20% Off</h3>
+      <p style={{ margin: '0 0 16px', color: '#6b7280', fontSize: '14px' }}>Subscribe to our newsletter and get exclusive deals delivered to your inbox.</p>
+      <input placeholder="your@email.com" style={{ width: '100%', padding: '10px 14px', border: '1px solid #e5e7eb', borderRadius: '8px', fontSize: '14px', marginBottom: '12px', boxSizing: 'border-box' }} />
+      <button style={{ width: '100%', padding: '12px', background: 'linear-gradient(135deg, #7c3aed, #6d28d9)', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 700, fontSize: '15px', cursor: 'pointer' }}>Subscribe →</button>
+    </div>
+  );
+}
+
+/** Chat Widget — ChatWidgetPlugin detects: .chat-widget, #chat-button */
+function ChatWidget() {
+  const [open, setOpen] = React.useState(false);
+  return (
+    <div className="chat-widget" style={{ position: 'fixed', bottom: '80px', right: '24px', zIndex: 9998 }}>
+      {open && (
+        <div style={{ width: '280px', height: '320px', background: '#fff', borderRadius: '12px', boxShadow: '0 8px 32px rgba(0,0,0,0.2)', padding: '16px', marginBottom: '8px', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ fontWeight: 700, marginBottom: '8px', fontSize: '14px' }}>💬 Support Chat</div>
+          <div style={{ flex: 1, background: '#f9fafb', borderRadius: '8px', padding: '10px', fontSize: '13px', color: '#6b7280' }}>
+            Hello! How can we help you today? Our team responds in under 2 minutes.
+          </div>
+          <input placeholder="Type a message..." style={{ marginTop: '8px', padding: '8px', border: '1px solid #e5e7eb', borderRadius: '6px', fontSize: '13px' }} />
+        </div>
+      )}
+      <button id="chat-button" onClick={() => setOpen(o => !o)} style={{ width: '52px', height: '52px', borderRadius: '50%', background: 'linear-gradient(135deg, #2563eb, #1d4ed8)', color: '#fff', border: 'none', fontSize: '22px', cursor: 'pointer', boxShadow: '0 4px 16px rgba(37,99,235,0.4)', display: 'block', marginLeft: 'auto' }}>
+        💬
+      </button>
+    </div>
+  );
+}
+
+/** Floating Promotion — CSS: .floating-ad, .sticky-ad */
+function FloatingPromotion() {
+  const [visible, setVisible] = React.useState(true);
+  if (!visible) return null;
+  return (
+    <div className="floating-ad sticky-ad" aria-label="Promotional offer"
+      style={{
+        position: 'fixed', bottom: '140px', right: '24px', zIndex: 9997,
+        background: 'linear-gradient(135deg, #dc2626, #b91c1c)', color: '#fff',
+        borderRadius: '12px', padding: '12px 16px', width: '200px',
+        boxShadow: '0 8px 24px rgba(220,38,38,0.4)'
+      }}>
+      <button onClick={() => setVisible(false)} style={{ position: 'absolute', top: '6px', right: '8px', background: 'none', border: 'none', color: 'rgba(255,255,255,0.7)', fontSize: '14px', cursor: 'pointer' }}>✕</button>
+      <div style={{ fontWeight: 800, fontSize: '14px', marginBottom: '4px' }}>🔥 Flash Sale!</div>
+      <div style={{ fontSize: '12px', opacity: 0.9, marginBottom: '8px' }}>Ends in 2:30:00</div>
+      <button style={{ width: '100%', padding: '6px', background: '#fff', color: '#dc2626', border: 'none', borderRadius: '6px', fontWeight: 700, fontSize: '12px', cursor: 'pointer' }}>Grab Deal</button>
+    </div>
+  );
+}
+
+/** Dynamic Ad — inserted via setTimeout (MutationObserver simulation) */
+function DynamicDelayedAd() {
+  const [loaded, setLoaded] = React.useState(false);
+  React.useEffect(() => {
+    const t = setTimeout(() => setLoaded(true), 2000);
+    return () => clearTimeout(t);
+  }, []);
+  if (!loaded) return <div className="ad-unit" style={{ width: '300px', height: '100px', background: '#f3f4f6', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9ca3af', fontSize: '13px' }}>Loading ad...</div>;
+  return (
+    <div className="ad-unit dynamic-ad" data-ad-inserted="true" aria-label="Advertisement"
+      style={{
+        width: '300px', height: '100px', background: 'linear-gradient(135deg, #fefce8, #fef9c3)',
+        border: '1px solid #fde68a', borderRadius: '8px', padding: '12px 16px',
+        display: 'flex', alignItems: 'center', gap: '12px'
+      }}>
+      <span style={{ fontSize: '28px' }}>⭐</span>
+      <div>
+        <div style={{ fontWeight: 700, fontSize: '13px', color: '#92400e' }}>Upgrade to Premium</div>
+        <div style={{ fontSize: '11px', color: '#78350f' }}>Dynamic ad — lazy loaded after page render</div>
+      </div>
+    </div>
+  );
+}
+
+/** Affiliate Banner — CSS: .affiliate-banner, .banner-ad, ARIA: advertisement */
+function AffiliateBanner({ product, discount }: { product: string; discount: string }) {
+  return (
+    <div className="affiliate-banner banner-ad" aria-label="Affiliate advertisement" role="complementary"
+      style={{
+        background: 'linear-gradient(135deg, #0f172a, #1e3a5f)', color: '#fff',
+        borderRadius: '10px', padding: '14px 20px', display: 'flex',
+        alignItems: 'center', justifyContent: 'space-between', gap: '16px',
+        boxShadow: '0 4px 16px rgba(15,23,42,0.4)'
+      }}>
+      <div>
+        <div style={{ fontSize: '10px', color: '#60a5fa', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px' }}>Affiliate Partner</div>
+        <div style={{ fontWeight: 700, fontSize: '15px' }}>{product}</div>
+        <div style={{ fontSize: '12px', color: '#94a3b8' }}>Save {discount} with our exclusive link</div>
+      </div>
+      <button style={{ padding: '10px 20px', background: '#2563eb', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+        Claim Deal
+      </button>
+    </div>
+  );
+}
+
+/** Embedded Social/YouTube placeholder — simulates iframe content */
+function EmbeddedVideoAd() {
+  return (
+    <div className="ad-slot" aria-label="Sponsored video content"
+      style={{ borderRadius: '10px', overflow: 'hidden', border: '1px solid #e5e7eb', position: 'relative' }}>
+      <div style={{ background: '#000', height: '180px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', flexDirection: 'column', gap: '8px' }}>
+        <div style={{ fontSize: '40px' }}>▶</div>
+        <div style={{ fontSize: '13px', color: '#9ca3af' }}>Sponsored Video Content</div>
+      </div>
+      <div style={{ position: 'absolute', top: '8px', right: '8px', background: 'rgba(0,0,0,0.7)', color: '#fff', fontSize: '10px', padding: '3px 8px', borderRadius: '4px' }}>AD</div>
+    </div>
+  );
+}
+
+/** Google AdSense style ins element */
+function AdSenseUnit() {
+  return (
+    <ins className="adsbygoogle"
+      style={{ display: 'inline-block', width: '728px', height: '90px', maxWidth: '100%', background: '#f8f9fa', border: '1px dashed #dee2e6', borderRadius: '4px' }}
+      data-ad-client="ca-pub-0000000000000000"
+      data-ad-slot="0000000000"
+      aria-label="Advertisement">
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#9ca3af', fontSize: '12px', gap: '8px' }}>
+        <span>Google AdSense Placeholder (728×90)</span>
+      </div>
+    </ins>
+  );
+}
+
+// =====================================================
 // AUTH / PROTECTED ROUTES
 // =====================================================
 const isAuthenticated = true; // Mock auth state
@@ -263,6 +512,11 @@ function Layout({ children }: { children: React.ReactNode }) {
         </main>
       </div>
       {toast && <ToastNotification message={toast} onClose={() => setToast(null)} />}
+      {/* TCSE: Global Ad Widgets — CookieBanner, Chat, Floating Promo, Newsletter */}
+      <CookieBanner />
+      <ChatWidget />
+      <FloatingPromotion />
+      <NewsletterPopup />
     </div>
   );
 }
@@ -273,6 +527,12 @@ function Layout({ children }: { children: React.ReactNode }) {
 function Home() {
   return (
     <div>
+      {/* TCSE: AdSense Leaderboard (728x90) — top of page */}
+      <AdSenseUnit />
+      {/* TCSE: Affiliate Banner */}
+      <div style={{ marginBottom: '12px' }}>
+        <AffiliateBanner product="NordVPN — Stay Private Online" discount="68%" />
+      </div>
       {/* Hero Banner */}
       <div style={{
         background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #0ea5e9 100%)',
@@ -288,6 +548,31 @@ function Home() {
           <span style={{ background: 'rgba(255,255,255,0.2)', borderRadius: '20px', padding: '6px 16px', fontSize: '13px', fontWeight: '600' }}>✅ Percy Integrated</span>
           <span style={{ background: 'rgba(255,255,255,0.2)', borderRadius: '20px', padding: '6px 16px', fontSize: '13px', fontWeight: '600' }}>⚡ Selective Testing</span>
           <span style={{ background: 'rgba(255,255,255,0.2)', borderRadius: '20px', padding: '6px 16px', fontSize: '13px', fontWeight: '600' }}>🎯 21 Routes Covered</span>
+        </div>
+      </div>
+      {/* TCSE: Leaderboard Banner ad between hero and content */}
+      <LeaderboardAd />
+      {/* Main content + sidebar with ads */}
+      <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
+        <div style={{ flex: 1 }}>
+          {/* TCSE: Sponsored Cards in content area */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px', marginBottom: '16px' }}>
+            <SponsoredCard title="Shopify — Start Selling Online" brand="Shopify" cta="Start Free Trial" />
+            <SponsoredCard title="Grammarly — Write Better" brand="Grammarly" cta="Install Free" />
+          </div>
+          {/* TCSE: Dynamic lazy-loaded ad */}
+          <div style={{ marginBottom: '16px' }}>
+            <DynamicDelayedAd />
+          </div>
+          {/* TCSE: Embedded video sponsored content */}
+          <div style={{ marginBottom: '16px' }}>
+            <EmbeddedVideoAd />
+          </div>
+        </div>
+        {/* TCSE: Sidebar with Skyscraper + Medium Rectangle */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', flexShrink: 0 }}>
+          <MediumRectangleAd />
+          <SkyscraperAd />
         </div>
       </div>
       {/* Feature Cards */}
