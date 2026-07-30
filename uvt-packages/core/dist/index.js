@@ -412,14 +412,20 @@ class CoreEngine {
             }
             if (localServer.proc) {
                 try {
-                    // Kill the spawned dev server (Vite / npm run dev / npm run preview)
+                    // Kill the spawned dev server (Vite / npm run dev / npm run preview / php)
                     const isWin = process.platform === 'win32';
                     if (isWin) {
                         // On Windows, spawned processes need to be killed via taskkill to include child processes
                         (await import('child_process')).execSync(`taskkill /PID ${localServer.proc.pid} /T /F`, { stdio: 'ignore' });
                     }
                     else {
-                        localServer.proc.kill('SIGTERM');
+                        // Unix: kill process group using negative PID
+                        try {
+                            process.kill(-localServer.proc.pid, 'SIGKILL');
+                        }
+                        catch {
+                            localServer.proc.kill('SIGTERM');
+                        }
                     }
                     shared_1.logger.debug(`Stopped dev server process (PID ${localServer.proc.pid}).`);
                 }
@@ -516,18 +522,19 @@ async function ensureLocalServer(cwd, port, framework) {
     // ── 2. Handle PHP & Laravel servers (Not using npm run) ────────────────
     if (lowerFramework === 'laravel') {
         shared_1.logger.info(`Spawning \`php artisan serve --port ${port}\` in ${cwd} to serve Laravel...`);
+        const isWin = process.platform === 'win32';
         const proc = (await import('child_process')).spawn('php', ['artisan', 'serve', `--port=${port}`], {
             cwd,
             shell: true,
             stdio: ['ignore', 'pipe', 'pipe'],
-            detached: false,
+            detached: !isWin,
             env: { ...process.env }
         });
-        proc.stdout?.on('data', (d) => shared_1.logger.debug(`[LARAVEL-SERVER] ${d.toString().trim()}`));
+        proc.stdout?.on('data', (d) => shared_1.logger.info(`[LARAVEL-SERVER] ${d.toString().trim()}`));
         proc.stderr?.on('data', (d) => {
             const msg = d.toString().trim();
             if (msg)
-                shared_1.logger.debug(`[LARAVEL-SERVER:ERR] ${msg}`);
+                shared_1.logger.info(`[LARAVEL-SERVER:ERR] ${msg}`);
         });
         proc.on('error', (err) => shared_1.logger.warn(`Laravel server process error: ${err.message}`));
         const ready = await waitForPort(port, 30000);
@@ -545,18 +552,19 @@ async function ensureLocalServer(cwd, port, framework) {
     }
     else if (lowerFramework === 'php') {
         shared_1.logger.info(`Spawning \`php -S 127.0.0.1:${port}\` in ${cwd} to serve PHP...`);
+        const isWin = process.platform === 'win32';
         const proc = (await import('child_process')).spawn('php', ['-S', `127.0.0.1:${port}`], {
             cwd,
             shell: true,
             stdio: ['ignore', 'pipe', 'pipe'],
-            detached: false,
+            detached: !isWin,
             env: { ...process.env }
         });
-        proc.stdout?.on('data', (d) => shared_1.logger.debug(`[PHP-SERVER] ${d.toString().trim()}`));
+        proc.stdout?.on('data', (d) => shared_1.logger.info(`[PHP-SERVER] ${d.toString().trim()}`));
         proc.stderr?.on('data', (d) => {
             const msg = d.toString().trim();
             if (msg)
-                shared_1.logger.debug(`[PHP-SERVER:ERR] ${msg}`);
+                shared_1.logger.info(`[PHP-SERVER:ERR] ${msg}`);
         });
         proc.on('error', (err) => shared_1.logger.warn(`PHP server process error: ${err.message}`));
         const ready = await waitForPort(port, 30000);
@@ -603,11 +611,12 @@ async function ensureLocalServer(cwd, port, framework) {
             shared_1.logger.info(`Spawning \`npm run ${scriptToRun}\`${args.length > 2 ? ' ' + args.slice(2).join(' ') : ''} in ${cwd} to serve the project...`);
             // IMPORTANT: On Windows, .cmd files cannot be spawned directly — must use shell:true
             // so the OS shell resolves 'npm' → 'npm.cmd' automatically. Without this you get EINVAL.
+            const isWin = process.platform === 'win32';
             const proc = (await import('child_process')).spawn('npm', args, {
                 cwd,
                 shell: true, // ← Required on Windows to resolve npm.cmd
                 stdio: ['ignore', 'pipe', 'pipe'],
-                detached: false,
+                detached: !isWin,
                 env: { ...process.env, PORT: String(port) } // PORT env var overrides for Next.js, Nuxt, and others
             });
             proc.stdout?.on('data', (d) => shared_1.logger.info(`[DEV-SERVER] ${d.toString().trim()}`));

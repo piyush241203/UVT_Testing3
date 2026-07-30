@@ -89,7 +89,7 @@ jobs:
         # Percy exec starts the Percy agent, sets PERCY_SERVER_ADDRESS,
         # then runs the child command which connects to the agent automatically.
         # UVT auto-starts and stops the dev server internally (port 5173 for Vite).
-        run: npx percy exec -- node uvt-packages/cli/dist/bin.js test --all --port 5173
+        run: npx percy exec -- node uvt-packages/cli/dist/bin.js test --all --port 3000
         env:
           PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
 
