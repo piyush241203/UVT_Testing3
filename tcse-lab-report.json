@@ -1,0 +1,1093 @@
+{
+  "totalScenarios": 19,
+  "passedScenarios": 19,
+  "failedScenarios": 0,
+  "overallScore": 100,
+  "averageCls": 0,
+  "unapprovedDomMutations": 0,
+  "groupScores": [
+    {
+      "group": "ad",
+      "count": 11,
+      "passed": 11,
+      "avgScore": 100
+    },
+    {
+      "group": "cookie_banner",
+      "count": 1,
+      "passed": 1,
+      "avgScore": 100
+    },
+    {
+      "group": "chat_widget",
+      "count": 1,
+      "passed": 1,
+      "avgScore": 100
+    },
+    {
+      "group": "newsletter_popup",
+      "count": 1,
+      "passed": 1,
+      "avgScore": 100
+    },
+    {
+      "group": "survey_popup",
+      "count": 1,
+      "passed": 1,
+      "avgScore": 100
+    },
+    {
+      "group": "consent_manager",
+      "count": 1,
+      "passed": 1,
+      "avgScore": 100
+    },
+    {
+      "group": "recommendation_widget",
+      "count": 1,
+      "passed": 1,
+      "avgScore": 100
+    },
+    {
+      "group": "social_embed",
+      "count": 1,
+      "passed": 1,
+      "avgScore": 100
+    },
+    {
+      "group": "analytics_overlay",
+      "count": 1,
+      "passed": 1,
+      "avgScore": 100
+    }
+  ],
+  "results": [
+    {
+      "scenarioId": "ad-google-adsense",
+      "scenarioName": "Google AdSense Banner",
+      "group": "ad",
+      "provider": "Google AdSense",
+      "passed": true,
+      "score": 100,
+      "propertyChecks": [
+        {
+          "propertyName": "Detection",
+          "passed": true,
+          "expected": "Signal Extracted",
+          "actual": "Signal Extracted"
+        },
+        {
+          "propertyName": "Confidence",
+          "passed": true,
+          "expected": ">= 0.60",
+          "actual": 1
+        },
+        {
+          "propertyName": "Decision",
+          "passed": true,
+          "expected": "HIDE",
+          "actual": "HIDE"
+        },
+        {
+          "propertyName": "Layout Stability",
+          "passed": true,
+          "expected": "Box Lock (728x90px)",
+          "actual": "Box Lock (728x90px)"
+        },
+        {
+          "propertyName": "CLS",
+          "passed": true,
+          "expected": 0,
+          "actual": 0
+        },
+        {
+          "propertyName": "Snapshot Stability",
+          "passed": true,
+          "expected": "Deterministic Baseline",
+          "actual": "Deterministic Baseline"
+        },
+        {
+          "propertyName": "Provider Upload",
+          "passed": true,
+          "expected": "Percy Transmission Ready",
+          "actual": "Percy Transmission Ready"
+        }
+      ],
+      "cls": 0,
+      "unapprovedDomMutations": 0
+    },
+    {
+      "scenarioId": "ad-google-ad-manager",
+      "scenarioName": "Google Ad Manager (DFP)",
+      "group": "ad",
+      "provider": "Google Ad Manager",
+      "passed": true,
+      "score": 100,
+      "propertyChecks": [
+        {
+          "propertyName": "Detection",
+          "passed": true,
+          "expected": "Signal Extracted",
+          "actual": "Signal Extracted"
+        },
+        {
+          "propertyName": "Confidence",
+          "passed": true,
+          "expected": ">= 0.60",
+          "actual": 1
+        },
+        {
+          "propertyName": "Decision",
+          "passed": true,
+          "expected": "HIDE",
+          "actual": "HIDE"
+        },
+        {
+          "propertyName": "Layout Stability",
+          "passed": true,
+          "expected": "Box Lock (300x250px)",
+          "actual": "Box Lock (300x250px)"
+        },
+        {
+          "propertyName": "CLS",
+          "passed": true,
+          "expected": 0,
+          "actual": 0
+        },
+        {
+          "propertyName": "Snapshot Stability",
+          "passed": true,
+          "expected": "Deterministic Baseline",
+          "actual": "Deterministic Baseline"
+        },
+        {
+          "propertyName": "Provider Upload",
+          "passed": true,
+          "expected": "Percy Transmission Ready",
+          "actual": "Percy Transmission Ready"
+        }
+      ],
+      "cls": 0,
+      "unapprovedDomMutations": 0
+    },
+    {
+      "scenarioId": "ad-amazon-ads",
+      "scenarioName": "Amazon Ad System Banner",
+      "group": "ad",
+      "provider": "Amazon Ads",
+      "passed": true,
+      "score": 100,
+      "propertyChecks": [
+        {
+          "propertyName": "Detection",
+          "passed": true,
+          "expected": "Signal Extracted",
+          "actual": "Signal Extracted"
+        },
+        {
+          "propertyName": "Confidence",
+          "passed": true,
+          "expected": ">= 0.60",
+          "actual": 0.86
+        },
+        {
+          "propertyName": "Decision",
+          "passed": true,
+          "expected": "PLACEHOLDER",
+          "actual": "MASK"
+        },
+        {
+          "propertyName": "Layout Stability",
+          "passed": true,
+          "expected": "Box Lock (300x250px)",
+          "actual": "Box Lock (300x250px)"
+        },
+        {
+          "propertyName": "CLS",
+          "passed": true,
+          "expected": 0,
+          "actual": 0
+        },
+        {
+          "propertyName": "Snapshot Stability",
+          "passed": true,
+          "expected": "Deterministic Baseline",
+          "actual": "Deterministic Baseline"
+        },
+        {
+          "propertyName": "Provider Upload",
+          "passed": true,
+          "expected": "Percy Transmission Ready",
+          "actual": "Percy Transmission Ready"
+        }
+      ],
+      "cls": 0,
+      "unapprovedDomMutations": 0
+    },
+    {
+      "scenarioId": "ad-meta-audience-network",
+      "scenarioName": "Meta Audience Network Ad",
+      "group": "ad",
+      "provider": "Meta Audience Network",
+      "passed": true,
+      "score": 100,
+      "propertyChecks": [
+        {
+          "propertyName": "Detection",
+          "passed": true,
+          "expected": "Signal Extracted",
+          "actual": "Signal Extracted"
+        },
+        {
+          "propertyName": "Confidence",
+          "passed": true,
+          "expected": ">= 0.60",
+          "actual": 0.92
+        },
+        {
+          "propertyName": "Decision",
+          "passed": true,
+          "expected": "PLACEHOLDER",
+          "actual": "PLACEHOLDER"
+        },
+        {
+          "propertyName": "Layout Stability",
+          "passed": true,
+          "expected": "Box Lock (300x250px)",
+          "actual": "Box Lock (300x250px)"
+        },
+        {
+          "propertyName": "CLS",
+          "passed": true,
+          "expected": 0,
+          "actual": 0
+        },
+        {
+          "propertyName": "Snapshot Stability",
+          "passed": true,
+          "expected": "Deterministic Baseline",
+          "actual": "Deterministic Baseline"
+        },
+        {
+          "propertyName": "Provider Upload",
+          "passed": true,
+          "expected": "Percy Transmission Ready",
+          "actual": "Percy Transmission Ready"
+        }
+      ],
+      "cls": 0,
+      "unapprovedDomMutations": 0
+    },
+    {
+      "scenarioId": "ad-taboola",
+      "scenarioName": "Taboola Recommendation Feed",
+      "group": "ad",
+      "provider": "Taboola",
+      "passed": true,
+      "score": 100,
+      "propertyChecks": [
+        {
+          "propertyName": "Detection",
+          "passed": true,
+          "expected": "Signal Extracted",
+          "actual": "Signal Extracted"
+        },
+        {
+          "propertyName": "Confidence",
+          "passed": true,
+          "expected": ">= 0.60",
+          "actual": 0.86
+        },
+        {
+          "propertyName": "Decision",
+          "passed": true,
+          "expected": "PLACEHOLDER",
+          "actual": "MASK"
+        },
+        {
+          "propertyName": "Layout Stability",
+          "passed": true,
+          "expected": "Box Lock (1000x400px)",
+          "actual": "Box Lock (1000x400px)"
+        },
+        {
+          "propertyName": "CLS",
+          "passed": true,
+          "expected": 0,
+          "actual": 0
+        },
+        {
+          "propertyName": "Snapshot Stability",
+          "passed": true,
+          "expected": "Deterministic Baseline",
+          "actual": "Deterministic Baseline"
+        },
+        {
+          "propertyName": "Provider Upload",
+          "passed": true,
+          "expected": "Percy Transmission Ready",
+          "actual": "Percy Transmission Ready"
+        }
+      ],
+      "cls": 0,
+      "unapprovedDomMutations": 0
+    },
+    {
+      "scenarioId": "ad-outbrain",
+      "scenarioName": "Outbrain Native Recommendation",
+      "group": "ad",
+      "provider": "Outbrain",
+      "passed": true,
+      "score": 100,
+      "propertyChecks": [
+        {
+          "propertyName": "Detection",
+          "passed": true,
+          "expected": "Signal Extracted",
+          "actual": "Signal Extracted"
+        },
+        {
+          "propertyName": "Confidence",
+          "passed": true,
+          "expected": ">= 0.60",
+          "actual": 0.92
+        },
+        {
+          "propertyName": "Decision",
+          "passed": true,
+          "expected": "PLACEHOLDER",
+          "actual": "PLACEHOLDER"
+        },
+        {
+          "propertyName": "Layout Stability",
+          "passed": true,
+          "expected": "Box Lock (1000x400px)",
+          "actual": "Box Lock (1000x400px)"
+        },
+        {
+          "propertyName": "CLS",
+          "passed": true,
+          "expected": 0,
+          "actual": 0
+        },
+        {
+          "propertyName": "Snapshot Stability",
+          "passed": true,
+          "expected": "Deterministic Baseline",
+          "actual": "Deterministic Baseline"
+        },
+        {
+          "propertyName": "Provider Upload",
+          "passed": true,
+          "expected": "Percy Transmission Ready",
+          "actual": "Percy Transmission Ready"
+        }
+      ],
+      "cls": 0,
+      "unapprovedDomMutations": 0
+    },
+    {
+      "scenarioId": "ad-media-net",
+      "scenarioName": "Media.net Contextual Ad",
+      "group": "ad",
+      "provider": "Media.net",
+      "passed": true,
+      "score": 100,
+      "propertyChecks": [
+        {
+          "propertyName": "Detection",
+          "passed": true,
+          "expected": "Signal Extracted",
+          "actual": "Signal Extracted"
+        },
+        {
+          "propertyName": "Confidence",
+          "passed": true,
+          "expected": ">= 0.60",
+          "actual": 0.92
+        },
+        {
+          "propertyName": "Decision",
+          "passed": true,
+          "expected": "PLACEHOLDER",
+          "actual": "PLACEHOLDER"
+        },
+        {
+          "propertyName": "Layout Stability",
+          "passed": true,
+          "expected": "Box Lock (728x90px)",
+          "actual": "Box Lock (728x90px)"
+        },
+        {
+          "propertyName": "CLS",
+          "passed": true,
+          "expected": 0,
+          "actual": 0
+        },
+        {
+          "propertyName": "Snapshot Stability",
+          "passed": true,
+          "expected": "Deterministic Baseline",
+          "actual": "Deterministic Baseline"
+        },
+        {
+          "propertyName": "Provider Upload",
+          "passed": true,
+          "expected": "Percy Transmission Ready",
+          "actual": "Percy Transmission Ready"
+        }
+      ],
+      "cls": 0,
+      "unapprovedDomMutations": 0
+    },
+    {
+      "scenarioId": "ad-criteo",
+      "scenarioName": "Criteo Retargeting Banner",
+      "group": "ad",
+      "provider": "Criteo",
+      "passed": true,
+      "score": 100,
+      "propertyChecks": [
+        {
+          "propertyName": "Detection",
+          "passed": true,
+          "expected": "Signal Extracted",
+          "actual": "Signal Extracted"
+        },
+        {
+          "propertyName": "Confidence",
+          "passed": true,
+          "expected": ">= 0.60",
+          "actual": 0.92
+        },
+        {
+          "propertyName": "Decision",
+          "passed": true,
+          "expected": "PLACEHOLDER",
+          "actual": "PLACEHOLDER"
+        },
+        {
+          "propertyName": "Layout Stability",
+          "passed": true,
+          "expected": "Box Lock (300x250px)",
+          "actual": "Box Lock (300x250px)"
+        },
+        {
+          "propertyName": "CLS",
+          "passed": true,
+          "expected": 0,
+          "actual": 0
+        },
+        {
+          "propertyName": "Snapshot Stability",
+          "passed": true,
+          "expected": "Deterministic Baseline",
+          "actual": "Deterministic Baseline"
+        },
+        {
+          "propertyName": "Provider Upload",
+          "passed": true,
+          "expected": "Percy Transmission Ready",
+          "actual": "Percy Transmission Ready"
+        }
+      ],
+      "cls": 0,
+      "unapprovedDomMutations": 0
+    },
+    {
+      "scenarioId": "ad-revcontent",
+      "scenarioName": "RevContent Native Grid",
+      "group": "ad",
+      "provider": "RevContent",
+      "passed": true,
+      "score": 100,
+      "propertyChecks": [
+        {
+          "propertyName": "Detection",
+          "passed": true,
+          "expected": "Signal Extracted",
+          "actual": "Signal Extracted"
+        },
+        {
+          "propertyName": "Confidence",
+          "passed": true,
+          "expected": ">= 0.60",
+          "actual": 0.92
+        },
+        {
+          "propertyName": "Decision",
+          "passed": true,
+          "expected": "PLACEHOLDER",
+          "actual": "PLACEHOLDER"
+        },
+        {
+          "propertyName": "Layout Stability",
+          "passed": true,
+          "expected": "Box Lock (1000x350px)",
+          "actual": "Box Lock (1000x350px)"
+        },
+        {
+          "propertyName": "CLS",
+          "passed": true,
+          "expected": 0,
+          "actual": 0
+        },
+        {
+          "propertyName": "Snapshot Stability",
+          "passed": true,
+          "expected": "Deterministic Baseline",
+          "actual": "Deterministic Baseline"
+        },
+        {
+          "propertyName": "Provider Upload",
+          "passed": true,
+          "expected": "Percy Transmission Ready",
+          "actual": "Percy Transmission Ready"
+        }
+      ],
+      "cls": 0,
+      "unapprovedDomMutations": 0
+    },
+    {
+      "scenarioId": "ad-affiliate",
+      "scenarioName": "Affiliate Marketing Banner",
+      "group": "ad",
+      "provider": "Affiliate Network",
+      "passed": true,
+      "score": 100,
+      "propertyChecks": [
+        {
+          "propertyName": "Detection",
+          "passed": true,
+          "expected": "Signal Extracted",
+          "actual": "Signal Extracted"
+        },
+        {
+          "propertyName": "Confidence",
+          "passed": true,
+          "expected": ">= 0.60",
+          "actual": 0.74
+        },
+        {
+          "propertyName": "Decision",
+          "passed": true,
+          "expected": "MASK",
+          "actual": "MASK"
+        },
+        {
+          "propertyName": "Layout Stability",
+          "passed": true,
+          "expected": "Box Lock (300x250px)",
+          "actual": "Box Lock (300x250px)"
+        },
+        {
+          "propertyName": "CLS",
+          "passed": true,
+          "expected": 0,
+          "actual": 0
+        },
+        {
+          "propertyName": "Snapshot Stability",
+          "passed": true,
+          "expected": "Deterministic Baseline",
+          "actual": "Deterministic Baseline"
+        },
+        {
+          "propertyName": "Provider Upload",
+          "passed": true,
+          "expected": "Percy Transmission Ready",
+          "actual": "Percy Transmission Ready"
+        }
+      ],
+      "cls": 0,
+      "unapprovedDomMutations": 0
+    },
+    {
+      "scenarioId": "ad-internal",
+      "scenarioName": "Internal Marketing House Banner",
+      "group": "ad",
+      "provider": "Internal Marketing",
+      "passed": true,
+      "score": 100,
+      "propertyChecks": [
+        {
+          "propertyName": "Detection",
+          "passed": true,
+          "expected": "Signal Extracted",
+          "actual": "Signal Extracted"
+        },
+        {
+          "propertyName": "Confidence",
+          "passed": true,
+          "expected": ">= 0.60",
+          "actual": 0.74
+        },
+        {
+          "propertyName": "Decision",
+          "passed": true,
+          "expected": "MASK",
+          "actual": "MASK"
+        },
+        {
+          "propertyName": "Layout Stability",
+          "passed": true,
+          "expected": "Box Lock (1200x120px)",
+          "actual": "Box Lock (1200x120px)"
+        },
+        {
+          "propertyName": "CLS",
+          "passed": true,
+          "expected": 0,
+          "actual": 0
+        },
+        {
+          "propertyName": "Snapshot Stability",
+          "passed": true,
+          "expected": "Deterministic Baseline",
+          "actual": "Deterministic Baseline"
+        },
+        {
+          "propertyName": "Provider Upload",
+          "passed": true,
+          "expected": "Percy Transmission Ready",
+          "actual": "Percy Transmission Ready"
+        }
+      ],
+      "cls": 0,
+      "unapprovedDomMutations": 0
+    },
+    {
+      "scenarioId": "cookie-onetrust",
+      "scenarioName": "OneTrust Cookie Consent Banner",
+      "group": "cookie_banner",
+      "provider": "OneTrust",
+      "passed": true,
+      "score": 100,
+      "propertyChecks": [
+        {
+          "propertyName": "Detection",
+          "passed": true,
+          "expected": "Signal Extracted",
+          "actual": "Signal Extracted"
+        },
+        {
+          "propertyName": "Confidence",
+          "passed": true,
+          "expected": ">= 0.60",
+          "actual": 1
+        },
+        {
+          "propertyName": "Decision",
+          "passed": true,
+          "expected": "HIDE",
+          "actual": "HIDE"
+        },
+        {
+          "propertyName": "Layout Stability",
+          "passed": true,
+          "expected": "Box Lock (300x250px)",
+          "actual": "Box Lock (300x250px)"
+        },
+        {
+          "propertyName": "CLS",
+          "passed": true,
+          "expected": 0,
+          "actual": 0
+        },
+        {
+          "propertyName": "Snapshot Stability",
+          "passed": true,
+          "expected": "Deterministic Baseline",
+          "actual": "Deterministic Baseline"
+        },
+        {
+          "propertyName": "Provider Upload",
+          "passed": true,
+          "expected": "Percy Transmission Ready",
+          "actual": "Percy Transmission Ready"
+        }
+      ],
+      "cls": 0,
+      "unapprovedDomMutations": 0
+    },
+    {
+      "scenarioId": "chat-intercom",
+      "scenarioName": "Intercom Live Chat Launcher",
+      "group": "chat_widget",
+      "provider": "Intercom",
+      "passed": true,
+      "score": 100,
+      "propertyChecks": [
+        {
+          "propertyName": "Detection",
+          "passed": true,
+          "expected": "Signal Extracted",
+          "actual": "Signal Extracted"
+        },
+        {
+          "propertyName": "Confidence",
+          "passed": true,
+          "expected": ">= 0.60",
+          "actual": 0.98
+        },
+        {
+          "propertyName": "Decision",
+          "passed": true,
+          "expected": "HIDE",
+          "actual": "HIDE"
+        },
+        {
+          "propertyName": "Layout Stability",
+          "passed": true,
+          "expected": "Box Lock (300x250px)",
+          "actual": "Box Lock (300x250px)"
+        },
+        {
+          "propertyName": "CLS",
+          "passed": true,
+          "expected": 0,
+          "actual": 0
+        },
+        {
+          "propertyName": "Snapshot Stability",
+          "passed": true,
+          "expected": "Deterministic Baseline",
+          "actual": "Deterministic Baseline"
+        },
+        {
+          "propertyName": "Provider Upload",
+          "passed": true,
+          "expected": "Percy Transmission Ready",
+          "actual": "Percy Transmission Ready"
+        }
+      ],
+      "cls": 0,
+      "unapprovedDomMutations": 0
+    },
+    {
+      "scenarioId": "popup-newsletter",
+      "scenarioName": "Klaviyo Lead Capture Popup",
+      "group": "newsletter_popup",
+      "provider": "Klaviyo",
+      "passed": true,
+      "score": 100,
+      "propertyChecks": [
+        {
+          "propertyName": "Detection",
+          "passed": true,
+          "expected": "Signal Extracted",
+          "actual": "Signal Extracted"
+        },
+        {
+          "propertyName": "Confidence",
+          "passed": true,
+          "expected": ">= 0.60",
+          "actual": 0.96
+        },
+        {
+          "propertyName": "Decision",
+          "passed": true,
+          "expected": "HIDE",
+          "actual": "HIDE"
+        },
+        {
+          "propertyName": "Layout Stability",
+          "passed": true,
+          "expected": "Box Lock (300x250px)",
+          "actual": "Box Lock (300x250px)"
+        },
+        {
+          "propertyName": "CLS",
+          "passed": true,
+          "expected": 0,
+          "actual": 0
+        },
+        {
+          "propertyName": "Snapshot Stability",
+          "passed": true,
+          "expected": "Deterministic Baseline",
+          "actual": "Deterministic Baseline"
+        },
+        {
+          "propertyName": "Provider Upload",
+          "passed": true,
+          "expected": "Percy Transmission Ready",
+          "actual": "Percy Transmission Ready"
+        }
+      ],
+      "cls": 0,
+      "unapprovedDomMutations": 0
+    },
+    {
+      "scenarioId": "survey-hotjar",
+      "scenarioName": "Hotjar NPS Feedback Survey",
+      "group": "survey_popup",
+      "provider": "Hotjar",
+      "passed": true,
+      "score": 100,
+      "propertyChecks": [
+        {
+          "propertyName": "Detection",
+          "passed": true,
+          "expected": "Signal Extracted",
+          "actual": "Signal Extracted"
+        },
+        {
+          "propertyName": "Confidence",
+          "passed": true,
+          "expected": ">= 0.60",
+          "actual": 1
+        },
+        {
+          "propertyName": "Decision",
+          "passed": true,
+          "expected": "HIDE",
+          "actual": "HIDE"
+        },
+        {
+          "propertyName": "Layout Stability",
+          "passed": true,
+          "expected": "Box Lock (300x250px)",
+          "actual": "Box Lock (300x250px)"
+        },
+        {
+          "propertyName": "CLS",
+          "passed": true,
+          "expected": 0,
+          "actual": 0
+        },
+        {
+          "propertyName": "Snapshot Stability",
+          "passed": true,
+          "expected": "Deterministic Baseline",
+          "actual": "Deterministic Baseline"
+        },
+        {
+          "propertyName": "Provider Upload",
+          "passed": true,
+          "expected": "Percy Transmission Ready",
+          "actual": "Percy Transmission Ready"
+        }
+      ],
+      "cls": 0,
+      "unapprovedDomMutations": 0
+    },
+    {
+      "scenarioId": "consent-cookiebot",
+      "scenarioName": "Cookiebot Consent Dialog",
+      "group": "consent_manager",
+      "provider": "Cookiebot",
+      "passed": true,
+      "score": 100,
+      "propertyChecks": [
+        {
+          "propertyName": "Detection",
+          "passed": true,
+          "expected": "Signal Extracted",
+          "actual": "Signal Extracted"
+        },
+        {
+          "propertyName": "Confidence",
+          "passed": true,
+          "expected": ">= 0.60",
+          "actual": 1
+        },
+        {
+          "propertyName": "Decision",
+          "passed": true,
+          "expected": "HIDE",
+          "actual": "HIDE"
+        },
+        {
+          "propertyName": "Layout Stability",
+          "passed": true,
+          "expected": "Box Lock (300x250px)",
+          "actual": "Box Lock (300x250px)"
+        },
+        {
+          "propertyName": "CLS",
+          "passed": true,
+          "expected": 0,
+          "actual": 0
+        },
+        {
+          "propertyName": "Snapshot Stability",
+          "passed": true,
+          "expected": "Deterministic Baseline",
+          "actual": "Deterministic Baseline"
+        },
+        {
+          "propertyName": "Provider Upload",
+          "passed": true,
+          "expected": "Percy Transmission Ready",
+          "actual": "Percy Transmission Ready"
+        }
+      ],
+      "cls": 0,
+      "unapprovedDomMutations": 0
+    },
+    {
+      "scenarioId": "recommendation-zemanta",
+      "scenarioName": "Zemanta Recommendation Widget",
+      "group": "recommendation_widget",
+      "provider": "Zemanta",
+      "passed": true,
+      "score": 100,
+      "propertyChecks": [
+        {
+          "propertyName": "Detection",
+          "passed": true,
+          "expected": "Signal Extracted",
+          "actual": "Signal Extracted"
+        },
+        {
+          "propertyName": "Confidence",
+          "passed": true,
+          "expected": ">= 0.60",
+          "actual": 0.93
+        },
+        {
+          "propertyName": "Decision",
+          "passed": true,
+          "expected": "PLACEHOLDER",
+          "actual": "PLACEHOLDER"
+        },
+        {
+          "propertyName": "Layout Stability",
+          "passed": true,
+          "expected": "Box Lock (300x250px)",
+          "actual": "Box Lock (300x250px)"
+        },
+        {
+          "propertyName": "CLS",
+          "passed": true,
+          "expected": 0,
+          "actual": 0
+        },
+        {
+          "propertyName": "Snapshot Stability",
+          "passed": true,
+          "expected": "Deterministic Baseline",
+          "actual": "Deterministic Baseline"
+        },
+        {
+          "propertyName": "Provider Upload",
+          "passed": true,
+          "expected": "Percy Transmission Ready",
+          "actual": "Percy Transmission Ready"
+        }
+      ],
+      "cls": 0,
+      "unapprovedDomMutations": 0
+    },
+    {
+      "scenarioId": "social-twitter",
+      "scenarioName": "Twitter/X Post Embed",
+      "group": "social_embed",
+      "provider": "Twitter / X",
+      "passed": true,
+      "score": 100,
+      "propertyChecks": [
+        {
+          "propertyName": "Detection",
+          "passed": true,
+          "expected": "Signal Extracted",
+          "actual": "Signal Extracted"
+        },
+        {
+          "propertyName": "Confidence",
+          "passed": true,
+          "expected": ">= 0.60",
+          "actual": 0.93
+        },
+        {
+          "propertyName": "Decision",
+          "passed": true,
+          "expected": "PLACEHOLDER",
+          "actual": "PLACEHOLDER"
+        },
+        {
+          "propertyName": "Layout Stability",
+          "passed": true,
+          "expected": "Box Lock (300x250px)",
+          "actual": "Box Lock (300x250px)"
+        },
+        {
+          "propertyName": "CLS",
+          "passed": true,
+          "expected": 0,
+          "actual": 0
+        },
+        {
+          "propertyName": "Snapshot Stability",
+          "passed": true,
+          "expected": "Deterministic Baseline",
+          "actual": "Deterministic Baseline"
+        },
+        {
+          "propertyName": "Provider Upload",
+          "passed": true,
+          "expected": "Percy Transmission Ready",
+          "actual": "Percy Transmission Ready"
+        }
+      ],
+      "cls": 0,
+      "unapprovedDomMutations": 0
+    },
+    {
+      "scenarioId": "analytics-hotjar-heatmap",
+      "scenarioName": "Hotjar Heatmap Recording Overlay",
+      "group": "analytics_overlay",
+      "provider": "Hotjar Analytics",
+      "passed": true,
+      "score": 100,
+      "propertyChecks": [
+        {
+          "propertyName": "Detection",
+          "passed": true,
+          "expected": "Signal Extracted",
+          "actual": "Signal Extracted"
+        },
+        {
+          "propertyName": "Confidence",
+          "passed": true,
+          "expected": ">= 0.60",
+          "actual": 0.93
+        },
+        {
+          "propertyName": "Decision",
+          "passed": true,
+          "expected": "HIDE",
+          "actual": "PLACEHOLDER"
+        },
+        {
+          "propertyName": "Layout Stability",
+          "passed": true,
+          "expected": "Box Lock (300x250px)",
+          "actual": "Box Lock (300x250px)"
+        },
+        {
+          "propertyName": "CLS",
+          "passed": true,
+          "expected": 0,
+          "actual": 0
+        },
+        {
+          "propertyName": "Snapshot Stability",
+          "passed": true,
+          "expected": "Deterministic Baseline",
+          "actual": "Deterministic Baseline"
+        },
+        {
+          "propertyName": "Provider Upload",
+          "passed": true,
+          "expected": "Percy Transmission Ready",
+          "actual": "Percy Transmission Ready"
+        }
+      ],
+      "cls": 0,
+      "unapprovedDomMutations": 0
+    }
+  ],
+  "timestamp": 1785216824300
+}

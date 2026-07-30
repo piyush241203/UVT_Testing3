@@ -163,21 +163,36 @@ function detectFrameworkPort(cwd) {
         if (fs.existsSync(packageJsonPath)) {
             const pkg = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
             const deps = { ...(pkg.dependencies || {}), ...(pkg.devDependencies || {}) };
+            const scripts = pkg.scripts || {};
             // Angular: ng serve defaults to 4200
             if (deps['@angular/core'])
                 return 4200;
-            // SvelteKit / Svelte + Vite: vite dev defaults to 5173
-            if (deps['@sveltejs/kit'] || (deps['svelte'] && deps['vite']))
-                return 5173;
+            // SvelteKit: check if it has a built output for preview mode (port 4173)
+            // or if it will run dev mode (port 5173)
+            if (deps['@sveltejs/kit'] || (deps['svelte'] && deps['vite'])) {
+                // If .svelte-kit/output/client exists, we'll use `vite preview` → port 4173
+                const svelteKitBuilt = fs.existsSync(path.join(cwd, '.svelte-kit', 'output', 'client'));
+                // Check if the preview script has an explicit port
+                if (scripts['preview']) {
+                    const previewPortMatch = scripts['preview'].match(/--port[=\s]+(\d+)/);
+                    if (previewPortMatch)
+                        return parseInt(previewPortMatch[1], 10);
+                }
+                return svelteKitBuilt ? 4173 : 5173;
+            }
             // Next.js / Nuxt: 3000
             if (deps['next'] || deps['nuxt'] || deps['@nuxt/kit'])
                 return 3000;
-            // Plain Vite (React w/ Vite, Vue w/ Vite, plain HTML w/ Vite): 5173
+            // Plain Vite (React w/ Vite, Vue w/ Vite, plain HTML w/ Vite)
             if (deps['vite'] && !deps['next'] && !deps['nuxt']) {
-                // But many demo projects explicitly configure port 3000, so check vite.config
-                // If there is a uvt.config.ts port override we'd read it here — for now
-                // use 3000 as the safe SPA default since our demos all lock to port 3000.
-                return 3000;
+                // Check if the dev script explicitly specifies a port (e.g. vite --port 3000)
+                if (scripts['dev']) {
+                    const devPortMatch = scripts['dev'].match(/--port[=\s]+(\d+)/);
+                    if (devPortMatch)
+                        return parseInt(devPortMatch[1], 10);
+                }
+                // Default Vite dev server port is 5173
+                return 5173;
             }
         }
     }
@@ -521,16 +536,10 @@ ${ensureCliCmd}
         run: npm run build --if-present
         ${buildContinueOnError ? 'continue-on-error: true' : ''}
 
-      - name: Start dev server in background
-        run: ${startDevCmd}
-
-      - name: Wait for local server
-        run: |
-          for i in {1..60}; do
-            curl -s http://localhost:${devPort} && break || sleep 2
-          done
-
       - name: Run visual regression tests
+        # UVT auto-starts and manages the dev server internally.
+        # npx percy exec starts the Percy agent, sets PERCY_SERVER_ADDRESS,
+        # and UVT connects to it automatically when taking snapshots.
         run: npx percy exec -- ${runCliCmd} test --changed --port ${devPort}
         env:
           PERCY_TOKEN: \${{ secrets.PERCY_TOKEN }}
@@ -937,10 +946,12 @@ exports.program
 // ==========================================
 exports.program
     .command('test')
-    .description('Run pipeline: generate + run')
+    .description('Run pipeline: generate + run (defaults to testing changed files only when inside a Git repository)')
     .option('-p, --port <port>', 'Port number of development server (auto-detected from framework if not set)')
     .option('-h, --host <host>', 'Host address of development server', 'localhost')
-    .option('--changed', 'Only run tests affected by git changes', false)
+    .option('--change', 'Only run tests affected by git changes (default: enabled if .git repo present)', true)
+    .option('--changed', 'Alias for --change', true)
+    .option('--all', 'Force run visual tests for all routes', false)
     .action(async (options) => {
     const cwd = process.cwd();
     shared_1.logger.step('TEST', 'Executing generate + run alias...');
@@ -952,7 +963,15 @@ exports.program
             ? parseInt(options.port, 10)
             : detectFrameworkPort(cwd);
         shared_1.logger.info(`Using dev server port: ${port}${options.port ? ' (user-specified)' : ' (auto-detected from framework)'}`);
-        await engine.run({ host: options.host, port, changed: !!options.changed });
+        const isGitRepo = fs.existsSync(path.join(cwd, '.git'));
+        const isSelective = options.all ? false : (options.change !== false && options.changed !== false && isGitRepo);
+        if (isSelective) {
+            shared_1.logger.info('Selective mode enabled (--change default): filtering routes based on Git changes...');
+        }
+        else if (options.all) {
+            shared_1.logger.info('Running visual tests for all routes (--all specified).');
+        }
+        await engine.run({ host: options.host, port, changed: isSelective });
     }
     catch (error) {
         shared_1.logger.error(`Core pipeline test execution failed: ${error.message}`);
@@ -2278,5 +2297,7 @@ exports.program.command('beta')
         process.exit(1);
     }
 });
-// program.parse() is called exclusively in bin.ts to prevent double execution.
+if (require.main === module || (process.argv[1] && (process.argv[1].endsWith('index.js') || process.argv[1].endsWith('bin.js') || process.argv[1].endsWith('uvt')))) {
+    exports.program.parse(process.argv);
+}
 //# sourceMappingURL=index.js.map

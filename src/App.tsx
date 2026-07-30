@@ -10,7 +10,7 @@ function LiveClock() {
     const t = setInterval(() => setTime(new Date().toLocaleTimeString()), 1000);
     return () => clearInterval(t);
   }, []);
-  return <span className="dynamic-time" data-uvt-dynamic="clock">{time}</span>;
+  return <span className="dynamic-time" data-uvt-dynamic="clock">{time} (v1.0-RC10)</span>;
 }
 
 function RelativeTime({ base }: { base: Date }) {

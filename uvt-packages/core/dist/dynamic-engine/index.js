@@ -49,4 +49,5 @@ __exportStar(require("./pipeline/pipeline.js"), exports);
 __exportStar(require("./orchestrator/orchestrator.js"), exports);
 __exportStar(require("./pipeline/pipeline.test.js"), exports);
 __exportStar(require("./pipeline/shared-runtime.test.js"), exports);
+__exportStar(require("./chaos/urae-chaos.test.js"), exports);
 //# sourceMappingURL=index.js.map

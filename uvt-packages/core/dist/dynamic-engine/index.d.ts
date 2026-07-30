@@ -22,4 +22,5 @@ export * from './pipeline/pipeline.js';
 export * from './orchestrator/orchestrator.js';
 export * from './pipeline/pipeline.test.js';
 export * from './pipeline/shared-runtime.test.js';
+export * from './chaos/urae-chaos.test.js';
 //# sourceMappingURL=index.d.ts.map

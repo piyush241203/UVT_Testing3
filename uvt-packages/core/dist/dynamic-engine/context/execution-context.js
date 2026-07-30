@@ -45,7 +45,11 @@ class DynamicContext {
         }
         this.metadataComputations.set(metadataName, count + 1);
     }
+    repositoryRoot;
+    frameworkName;
     constructor(options) {
+        this.repositoryRoot = options.repositoryRoot;
+        this.frameworkName = options.frameworkName;
         this.config = options.config;
         this.logger = options.logger;
         this.page = options.page;

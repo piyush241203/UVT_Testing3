@@ -171,6 +171,7 @@ class LegacyMaskingStabilizer {
                     }
                 };
                 applyTextMasking();
+                // ── Dynamic element visual blurring (non-ad) ──────────────────────────
                 const dynamicSelectors = [
                     '[id*="date" i]', '[id*="time" i]', '[id*="clock" i]',
                     '[class*="date" i]', '[class*="time" i]', '[class*="clock" i]',
@@ -186,22 +187,144 @@ class LegacyMaskingStabilizer {
                     try {
                         document.querySelectorAll(sel).forEach(el => {
                             const htmlEl = el;
-                            htmlEl.style.filter = 'blur(6px)';
-                            htmlEl.style.opacity = '0.4';
+                            htmlEl.style.setProperty('filter', 'blur(6px)', 'important');
+                            htmlEl.style.setProperty('opacity', '0.4', 'important');
                         });
                     }
                     catch { }
                 });
+                // ── Ad Removal — CSS <style> injection (React/SPA-safe) ──────────────
+                //
+                // IMPORTANT: We use CSS injection instead of direct DOM mutation.
+                //
+                // WHY: Setting `innerHTML = ''` or `style.display = 'none'` directly on
+                // ad DOM elements triggers React's (and Vue's/Angular's) virtual DOM
+                // reconciler, which immediately RESTORES the element from virtual state.
+                // The ad appears to be hidden for ~1ms and then React re-renders it back.
+                //
+                // CSS injection via a <style> tag operates at the browser rendering layer,
+                // BELOW the framework runtime. The framework cannot "undo" CSS rules
+                // because CSS is applied by the browser engine independently of JS.
+                // This means ad elements stay hidden even through React re-renders.
+                //
+                // For Percy's cloud renderer, the percyCSS option handles this independently.
+                // ─────────────────────────────────────────────────────────────────────
+                const adCSSSelectors = [
+                    /* Google AdSense & DFP */
+                    'ins.adsbygoogle',
+                    'ins[data-ad-client]',
+                    'ins[data-ad-slot]',
+                    'iframe[src*="googlesyndication"]',
+                    'iframe[src*="doubleclick"]',
+                    'iframe[src*="googleadservices"]',
+                    'iframe[id*="google_ads"]',
+                    '[id*="google_ads"]',
+                    '[class*="google-auto-placed"]',
+                    '[data-ad-client]',
+                    '[data-ad-slot]',
+                    '[data-google-query-id]',
+                    /* Ad Networks */
+                    'iframe[src*="adnxs"]',
+                    'iframe[src*="taboola"]',
+                    'iframe[src*="outbrain"]',
+                    'iframe[src*="media.net"]',
+                    /* IAB Standard Heuristics — CASE-INSENSITIVE attribute selectors */
+                    '[class*="ad-banner" i]',
+                    '[class*="ad-container" i]',
+                    '[class*="ad-wrapper" i]',
+                    '[class*="ad-slot" i]',
+                    '[class*="ad-unit" i]',
+                    '[class*="ad-block" i]',
+                    '[class*="adslot" i]',
+                    '[class*="adunit" i]',
+                    '[class*="adbanner" i]',
+                    '[class*="sidebar-ad" i]',
+                    '[class*="advertisement" i]',
+                    '[class*="advertising" i]',
+                    '[id*="ad-banner" i]',
+                    '[id*="ad-container" i]',
+                    '[id*="ad-slot" i]',
+                    '[id*="ad-unit" i]',
+                    '[id*="advertisement" i]',
+                    '[id*="sidebar-ad" i]',
+                    /* Sponsored Content */
+                    '[class*="sponsor" i]',
+                    '[id*="sponsor" i]',
+                    '[class*="sponsored-content" i]',
+                    '[class*="sponsored-card" i]',
+                    '[class*="promoted-content" i]',
+                    '[class*="native-ad" i]',
+                    /* Cookie & GDPR Banners */
+                    '[class*="cookie-banner" i]',
+                    '[class*="cookie-consent" i]',
+                    '[class*="gdpr-banner" i]',
+                    '[class*="consent-banner" i]',
+                    '[id*="cookie-banner" i]',
+                    '[id*="cookie-consent" i]',
+                    '#cookie-consent',
+                    '.cookie-banner',
+                    /* Popups & Chat Widgets */
+                    '[class*="newsletter-popup" i]',
+                    '[class*="chat-widget" i]',
+                    '[class*="intercom" i]',
+                    '[class*="drift-widget" i]',
+                    '.newsletter-popup',
+                    /* UVT hide attributes */
+                    '[data-percy-hide="true"]',
+                    '[data-percy-ignore="true"]'
+                ];
+                // Build CSS text from all ad selectors
+                const adCSSText = adCSSSelectors.join(',\n') + ` {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  overflow: hidden !important;
+}`;
+                // Inject (or update) the UVT ad-hiding stylesheet
+                const adStyleId = '__uvt_ad_hide__';
+                let adStyle = document.getElementById(adStyleId);
+                if (!adStyle) {
+                    adStyle = document.createElement('style');
+                    adStyle.id = adStyleId;
+                    adStyle.setAttribute('data-uvt', 'ad-hide');
+                    (document.head || document.documentElement).appendChild(adStyle);
+                }
+                adStyle.textContent = adCSSText;
+                // Also mark elements with data attributes for Percy's serializer
+                // Note: We do NOT mutate innerHTML here — that triggers framework reconciliation
+                adCSSSelectors.forEach(sel => {
+                    try {
+                        document.querySelectorAll(sel).forEach(el => {
+                            el.setAttribute('data-percy-hide', 'true');
+                            el.setAttribute('data-percy-ignore', 'true');
+                        });
+                    }
+                    catch { }
+                });
+                // ── MutationObserver: re-apply text masking when DOM changes ──────────
+                // We do NOT re-apply ad hiding in the observer because:
+                //   1. The CSS <style> tag persists automatically — no re-application needed
+                //   2. Re-applying DOM-level hiding in the observer creates race conditions with React
                 const observer = new MutationObserver(() => {
                     observer.disconnect();
                     try {
                         applyTextMasking();
+                        // Ensure ad style tag wasn't removed by framework hot-reload
+                        const styleCheck = document.getElementById(adStyleId);
+                        if (!styleCheck) {
+                            const freshStyle = document.createElement('style');
+                            freshStyle.id = adStyleId;
+                            freshStyle.setAttribute('data-uvt', 'ad-hide');
+                            freshStyle.textContent = adCSSText;
+                            (document.head || document.documentElement).appendChild(freshStyle);
+                        }
                     }
                     finally {
-                        observer.observe(document.body, { childList: true, subtree: true, attributes: true, characterData: true });
+                        observer.observe(document.body, { childList: true, subtree: true, attributes: false, characterData: true });
                     }
                 });
-                observer.observe(document.body, { childList: true, subtree: true, attributes: true, characterData: true });
+                observer.observe(document.body, { childList: true, subtree: true, attributes: false, characterData: true });
             }, combinedValues);
             return { success: true, modifiedSelectors: [], executionTimeMs: Date.now() - start };
         }

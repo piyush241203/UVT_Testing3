@@ -29,17 +29,17 @@ jobs:
           echo "=== UVT Environment ==="
           echo "Package Manager : npm"
           echo "Workspace       : No"
-          echo "Framework       : React"
-          echo "CLI Source      : Published Package"
+          echo "Framework       : React (Vite)"
+          echo "CLI Source      : Local (uvt-packages/cli)"
           echo "Node            : $(node -v)"
           echo "Working Dir     : $(pwd)"
-          
+
           if npx playwright --version &>/dev/null; then
             echo "Playwright      : Installed"
           else
             echo "Playwright      : Not Installed"
           fi
-          
+
           echo "=== Percy Diagnostics ==="
           if [ -n "$PERCY_TOKEN" ]; then
             echo "PERCY_TOKEN: Present"
@@ -49,38 +49,19 @@ jobs:
           else
             echo "PERCY_TOKEN: Not Present"
           fi
-          
+
           if npx percy --version &>/dev/null; then
             echo "Percy CLI: $(npx percy --version)"
           else
             echo "Percy CLI: Not Installed"
           fi
-          
-          if npm ls @percy/playwright &>/dev/null; then
-            echo "@percy/playwright: $(npm ls @percy/playwright | grep @percy/playwright)"
-          else
-            echo "@percy/playwright: Not Installed or not found in npm ls"
-          fi
-          
+
           echo "--- Percy Environment Variables ---"
           env | grep PERCY || echo "No other PERCY_* vars found"
-          
+
           echo "======================="
         env:
           PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
-      - name: Ensure UVT CLI is installed
-        run: |
-          if ! npx uvt --version &>/dev/null; then
-            echo "UVT CLI not found. Installing..."
-            npm install -D @uvt/cli || {
-              echo "UVT CLI was not found."
-              echo "Detected package manager: npm"
-              echo "Workspace: No"
-              echo "Attempted installation: npm install -D @uvt/cli"
-              echo "Please verify package installation."
-              exit 1
-            }
-          fi
 
       - name: Cache Playwright Browsers
         id: playwright-cache
@@ -103,17 +84,12 @@ jobs:
         run: npm run build --if-present
         continue-on-error: true
 
-      - name: Start dev server in background
-        run: npx vite --port 5173 --strictPort &
-
-      - name: Wait for local server
-        run: |
-          for i in {1..60}; do
-            curl -s http://localhost:5173 && break || sleep 2
-          done
-
       - name: Run visual regression tests
-        run: node uvt-packages/cli/dist/bin.js run
+        # CORRECT PATTERN: npx percy exec -- <uvt command>
+        # Percy exec starts the Percy agent, sets PERCY_SERVER_ADDRESS,
+        # then runs the child command which connects to the agent automatically.
+        # UVT auto-starts and stops the dev server internally (port 5173 for Vite).
+        run: npx percy exec -- node uvt-packages/cli/dist/bin.js test --all --port 5173
         env:
           PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
 

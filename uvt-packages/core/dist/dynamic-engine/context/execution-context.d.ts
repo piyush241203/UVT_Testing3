@@ -58,6 +58,8 @@ export declare class DynamicContext {
     tracer?: any;
     recordDOMWalk(engineName: string): void;
     recordMetadataGen(metadataName: string): void;
+    readonly repositoryRoot: string;
+    readonly frameworkName: string;
     constructor(options: ContextOptions);
     setMetadata(key: string, value: unknown): void;
     getMetadata<T>(key: string): T | undefined;

@@ -5,7 +5,8 @@ snapshot:
     - 768
     - 1280
   min-height: 1024
-  enable-javascript: false
+  enable-javascript: true
 discovery:
   network-idle-timeout: 750
+  disable-cache: false
   # Framework: React (Vite) | Project: SPA
