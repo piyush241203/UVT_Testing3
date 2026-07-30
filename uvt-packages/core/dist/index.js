@@ -455,7 +455,7 @@ async function waitForPort(port, maxMs = 30000) {
             s.on('connect', () => { s.destroy(); res(true); });
             s.on('timeout', () => { s.destroy(); res(false); });
             s.on('error', () => res(false));
-            s.connect(port, '127.0.0.1');
+            s.connect(port);
         });
         if (ok)
             return true;
@@ -505,7 +505,7 @@ async function ensureLocalServer(cwd, port, framework) {
         socket.on('connect', () => { socket.destroy(); resolve(true); });
         socket.on('timeout', () => { socket.destroy(); resolve(false); });
         socket.on('error', () => { resolve(false); });
-        socket.connect(port, '127.0.0.1');
+        socket.connect(port);
     });
     if (alreadyListening) {
         shared_1.logger.info(`Port ${port} is currently occupied. Terminating stale process to ensure fresh web server deployment...`);
@@ -610,11 +610,11 @@ async function ensureLocalServer(cwd, port, framework) {
                 detached: false,
                 env: { ...process.env, PORT: String(port) } // PORT env var overrides for Next.js, Nuxt, and others
             });
-            proc.stdout?.on('data', (d) => shared_1.logger.debug(`[DEV-SERVER] ${d.toString().trim()}`));
+            proc.stdout?.on('data', (d) => shared_1.logger.info(`[DEV-SERVER] ${d.toString().trim()}`));
             proc.stderr?.on('data', (d) => {
                 const msg = d.toString().trim();
                 if (msg)
-                    shared_1.logger.debug(`[DEV-SERVER:ERR] ${msg}`);
+                    shared_1.logger.info(`[DEV-SERVER:ERR] ${msg}`);
             });
             proc.on('error', (err) => shared_1.logger.warn(`Dev server process error: ${err.message}`));
             // Wait up to 30s for the dev server to start accepting connections
@@ -639,11 +639,7 @@ async function ensureLocalServer(cwd, port, framework) {
     const hasDist = fs.existsSync(path.join(cwd, 'dist'));
     const hasBuild = fs.existsSync(path.join(cwd, 'build'));
     const hasPublic = fs.existsSync(path.join(cwd, 'public'));
-    // Detect static HTML project: has .html files in root but no SPA framework
-    const rootHtmlFiles = fs.existsSync(cwd)
-        ? fs.readdirSync(cwd).filter(f => f.endsWith('.html') && f !== 'index.html')
-        : [];
-    const isStaticHtmlProject = rootHtmlFiles.length > 0;
+    const isStaticHtmlProject = framework?.toLowerCase() === 'html';
     // For static HTML: serve from root so all .html pages are accessible
     // For SPA (Vue/Svelte/React): serve dist/ with SPA fallback
     const targetDir = isStaticHtmlProject ? cwd
